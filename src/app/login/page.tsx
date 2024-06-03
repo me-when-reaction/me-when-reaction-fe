@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
-import { login } from './action'
+"use server"
+
+import React from 'react'
 import { supabaseServer } from '@/utilities/supabase-server';
 import { redirect } from 'next/navigation';
 import LoginFormPage from './login-page';
@@ -11,9 +12,7 @@ async function checkLogin(){
   if (data?.user) redirect('/');
 }
 
-export default function LoginPage() {
-
-  checkLogin();
-
+export default async function LoginPage() {
+  await checkLogin();
   return <LoginFormPage/>
 }
