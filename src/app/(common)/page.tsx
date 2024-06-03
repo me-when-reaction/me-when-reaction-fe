@@ -1,20 +1,18 @@
-import { supabaseServer } from '@/utilities/supabase-server'
-import React from 'react'
-import { Logout } from './action';
-import HomeMasonry from '@/components/masonry/HomeMasonry';
-import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+'use client'
 
-export default async function HomePage() {
-  const queryClient = new QueryClient();
+import React from 'react'
+import HomeMasonry from '@/components/masonry/HomeMasonry';
+
+export default function HomePage() {
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="hero">
-        This is hero
+    <>
+      <div className="h-32 w-full text-center align-middle">
+        <div className='h-full flex justify-center items-center text-4xl font-bold'>Welcome and feel free to steal</div>
       </div>
       <div className="image">
         <HomeMasonry/>
       </div>
-    </HydrationBoundary>
+    </>
   )
 }
