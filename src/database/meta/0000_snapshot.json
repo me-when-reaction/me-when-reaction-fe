@@ -1,0 +1,424 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.__EFMigrationsHistory": {
+      "name": "__EFMigrationsHistory",
+      "schema": "",
+      "columns": {
+        "MigrationId": {
+          "name": "MigrationId",
+          "type": "varchar(150)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ProductVersion": {
+          "name": "ProductVersion",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ms_user": {
+      "name": "ms_user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identity_id": {
+          "name": "identity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "identity_provider": {
+          "name": "identity_provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_in": {
+          "name": "date_in",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_up": {
+          "name": "date_up",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_del": {
+          "name": "date_del",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_in": {
+          "name": "user_in",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_up": {
+          "name": "user_up",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_del": {
+          "name": "user_del",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "name": "deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.tr_image": {
+      "name": "tr_image",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "link": {
+          "name": "link",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extension": {
+          "name": "extension",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age_rating": {
+          "name": "age_rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_in": {
+          "name": "date_in",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_up": {
+          "name": "date_up",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_del": {
+          "name": "date_del",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_in": {
+          "name": "user_in",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_up": {
+          "name": "user_up",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_del": {
+          "name": "user_del",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "name": "deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.tr_image_tag": {
+      "name": "tr_image_tag",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "image_id": {
+          "name": "image_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tag_id": {
+          "name": "tag_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_in": {
+          "name": "date_in",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_up": {
+          "name": "date_up",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_del": {
+          "name": "date_del",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_in": {
+          "name": "user_in",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_up": {
+          "name": "user_up",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_del": {
+          "name": "user_del",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "name": "deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "IX_tr_image_tag_image_id": {
+          "name": "IX_tr_image_tag_image_id",
+          "columns": [
+            {
+              "expression": "image_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "IX_tr_image_tag_tag_id": {
+          "name": "IX_tr_image_tag_tag_id",
+          "columns": [
+            {
+              "expression": "tag_id",
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops",
+              "isExpression": false
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "FK_tr_image_tag_tr_image_image_id": {
+          "name": "FK_tr_image_tag_tr_image_image_id",
+          "tableFrom": "tr_image_tag",
+          "tableTo": "tr_image",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "image_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "FK_tr_image_tag_tr_tag_tag_id": {
+          "name": "FK_tr_image_tag_tr_tag_tag_id",
+          "tableFrom": "tr_image_tag",
+          "tableTo": "tr_tag",
+          "schemaTo": "public",
+          "columnsFrom": [
+            "tag_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.tr_tag": {
+      "name": "tr_tag",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age_rating": {
+          "name": "age_rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_in": {
+          "name": "date_in",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date_up": {
+          "name": "date_up",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_del": {
+          "name": "date_del",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_in": {
+          "name": "user_in",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_up": {
+          "name": "user_up",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_del": {
+          "name": "user_del",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted": {
+          "name": "deleted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {}
+  }
+}
