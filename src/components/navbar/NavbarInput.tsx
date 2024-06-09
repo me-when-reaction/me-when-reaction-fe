@@ -7,17 +7,16 @@ import { Key } from 'ts-key-enum'
 
 export default function NavbarInputClient() {
   
-  const setInput = useGlobalState(s => s.setSearch)
-  const [tempInput, setTempInput] = useState("");
+  const [text, setText, setQuery] = useGlobalState(s => [s.search.text, s.search.setText, s.search.setQuery])
 
   return (
     <Input type="text"
       className='w-full'
-      value={tempInput}
-      onChange={e => setTempInput(e.target.value)}
+      value={text}
+      onChange={e => setText(e.target.value)}
       placeholder='Put your tags here'
       onKeyUp={e => {
-        if (e.key === Key.Enter) setInput(tempInput);
+        if (e.key === Key.Enter) setQuery(text);
       }}
     />
   )

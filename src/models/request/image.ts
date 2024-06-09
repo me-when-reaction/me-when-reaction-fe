@@ -3,7 +3,7 @@ export type GetAllImagesRequest = {
   TagOR?: string[],
   AgeRating?: AgeRating,
   PageSize: number,
-  PageNumber: number,
+  CurrentPage: number,
 }
 
 export enum AgeRating {
