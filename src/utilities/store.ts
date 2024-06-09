@@ -9,32 +9,41 @@ export interface UserState {
   id: string;
 }
 
+export interface SearchState {
+  /** Untuk searchbar saja */
+  text: string;
+  setText: (input: string) => void
+
+  /** Untuk pencarian dan lempar ke aplikasi */
+  query: string;
+  setQuery: (input: string) => void
+}
+
 export interface GlobalState {
   user: UserState | null;
-  search: string;
+  search: SearchState;
   
   login: (newUser: UserState) => void
   logout: () => void,
-  setSearch: (input: string) => void
 }
 
 export const useGlobalState = create<GlobalState>()(
   persist(
     (set) => ({
       user: null,
-      search: "",
+      search: {
+        text: "",
+        query: "",
+        setQuery: (input) => set(produce<GlobalState>((s) => { s.search.query = input })),
+        setText: (input) => set(produce<GlobalState>((s) => { s.search.text = input })),
+      },
 
       login: (newUser: UserState) => set(produce(s => {s.user = newUser})),
       logout: () => set(produce<GlobalState>(s => {s.user = null})),
-      setSearch: (input) => set(produce<GlobalState>((s) => { s.search = input }))
     }),
     {
       name: "app-storage",
-      partialize: state => {
-        Object.fromEntries(
-          Object.entries(state).filter(([key]) => !['search', 'setSearch'].includes(key))
-        )
-      }
+      partialize: state => [state.user, state.login, state.logout]
     }
   )
 )

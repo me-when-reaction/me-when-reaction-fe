@@ -14,8 +14,9 @@ export default async function NavBar() {
       <Link href={'/login'}>Login</Link>
     </Button>
   ) : (
-    <form>
-      <Button buttonType='danger' formAction={Logout}>Logout</Button>
+    <form className='flex gap-2'>
+      <Button buttonType='success' className='h-full'>Insert</Button>
+      <Button buttonType='danger' className='h-full' formAction={Logout}>Logout</Button>
     </form>
   )
 

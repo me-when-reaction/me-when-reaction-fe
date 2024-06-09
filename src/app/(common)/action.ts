@@ -9,3 +9,7 @@ export async function Logout(){
   await supabase.auth.signOut();
   redirect('/login');
 }
+
+export async function Insert(){
+  redirect('/insert');
+}

@@ -38,7 +38,7 @@
       ],
       "serverReadyAction": {
         "pattern": "- Local:.+(https?://.+)",
-        "uriFormat": "%s"
+        "uriFormat": "%s",
       }
     }
   ]
