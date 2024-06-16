@@ -17,8 +17,5 @@ export async function FetchClient<TResponse, TRequest extends Record<string, any
     },
     body: request.method !== "GET" && request.method !== "DELETE" ? JSON.stringify(omitBy(request.data ?? {}, isNil)) : null
   })).json() as BaseResponse<TResponse>;
-
-  console.log(response);
-
   return response;
 }

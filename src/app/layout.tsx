@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import classNames from 'classnames';
+import { DarkThemeToggle, Flowbite, ThemeModeScript } from 'flowbite-react';
 
 const font = Open_Sans({
   subsets: ["latin"],
@@ -21,7 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={classNames(font.className, 'box-border')}>{children}</body>
+      <head>
+        <ThemeModeScript/>
+      </head>
+      <body className={classNames(font.className, 'box-border')}>
+        <Flowbite theme={{mode: 'dark'}}>
+          {children}
+        </Flowbite>
+      </body>
     </html>
   );
 }

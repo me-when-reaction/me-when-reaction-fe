@@ -5,7 +5,7 @@
       "name": "Next.js: debug server-side",
       "type": "node-terminal",
       "request": "launch",
-      "command": "npm run dev",
+      "command": "pnpm run dev",
       "skipFiles": [
         "<node_internals>/**",
         "**/node_modules/**",
@@ -29,17 +29,13 @@
       "name": "Next.js: debug full stack",
       "type": "node-terminal",
       "request": "launch",
-      "command": "npm run dev --experimental-https",
+      "command": "pnpm run dev",
       "skipFiles": [
         "<node_internals>/**",
         "**/node_modules/**",
         "<node_internals>\\**",
         "**\\node_modules\\**",
-      ],
-      "serverReadyAction": {
-        "pattern": "- Local:.+(https?://.+)",
-        "uriFormat": "%s",
-      }
+      ]
     }
   ]
 }
