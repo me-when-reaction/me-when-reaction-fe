@@ -9,11 +9,11 @@ import { GetAllImagesResponse } from '@/models/response/image';
 import { FetchClient } from '@/apis/api-client';
 import { GetAllImagesRequest } from '@/models/request/image';
 import { useGlobalState } from '@/utilities/store';
-import Button from '../button/Button';
 import FileSaver from 'file-saver';
 import Chip from '../chip/Chip';
 import classNames from 'classnames';
 import { PaginationResponse } from '@/models/response/base';
+import { Button } from 'flowbite-react';
 
 interface HomeMasonryCardState {
   open: boolean;
@@ -69,7 +69,7 @@ export default function HomeMasonry() {
       </ResponsiveMasonry>
       {hasNextPage &&
         <div className="text-center py-5">
-          <Button buttonType='primary' className='w-full' onClick={_ => fetchNextPage()}>Add more</Button>
+          <Button  className='w-full' onClick={(_: any) => fetchNextPage()}>Add more</Button>
         </div>
       }
     </div>
@@ -92,7 +92,7 @@ function HomeMasonryCard({ data }: { data: GetAllImagesResponse }) {
   }
 
   return (
-    <div className='flex flex-col bg-[#387496]/35 p-4 rounded-md'>
+    <div className='flex flex-col bg-[#2370d3]/35 p-4 rounded-md '>
       <div className='mb-2'>
         <Image src={data.link} alt={data.name} width={450} height={400} />
       </div>
@@ -111,7 +111,7 @@ function HomeMasonryCard({ data }: { data: GetAllImagesResponse }) {
           {data.tags.map(t => (<Chip text={t} key={t} />))}
         </div>
         <div>
-          <Button buttonType='success' className='w-full' disabled={state.saving} onClick={_ => handleOnSteal()}>Steal</Button>
+          <Button color='green' className='w-full' disabled={state.saving} onClick={(_: any) => handleOnSteal()}>Steal</Button>
         </div>
       </div>
     </div>
