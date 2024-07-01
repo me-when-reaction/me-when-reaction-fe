@@ -1,12 +1,22 @@
+import { FlowbiteColors } from "flowbite-react";
 import { produce } from "immer";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+
+type showKeys<T extends keyof any> = T extends any ? T : never;
 
 export interface UserState {
   name: string;
   token: string;
   email: string;
   id: string;
+}
+
+export interface AlertState {
+  text: string | string[];
+  type: keyof FlowbiteColors;
+  setAlert: (text: string | string[], type: keyof FlowbiteColors) => void;
+  closeAlert: () => void;
 }
 
 export interface SearchState {
@@ -22,6 +32,7 @@ export interface SearchState {
 export interface GlobalState {
   user: UserState | null;
   search: SearchState;
+  alert: AlertState;
   
   login: (newUser: UserState) => void
   logout: () => void,
@@ -36,6 +47,22 @@ export const useGlobalState = create<GlobalState>()(
         query: "",
         setQuery: (input) => set(produce<GlobalState>((s) => { s.search.query = input })),
         setText: (input) => set(produce<GlobalState>((s) => { s.search.text = input })),
+      },
+      alert: {
+        text: "",
+        type: '',
+        setAlert(text, type) {
+          set(produce<GlobalState>((s) => {
+            s.alert.text = text;
+            s.alert.type = type;
+          }))
+        },
+        closeAlert() {
+          set(produce<GlobalState>((s) => {
+            s.alert.text = "";
+            s.alert.type = "";
+          }))
+        },
       },
 
       login: (newUser: UserState) => set(produce(s => {s.user = newUser})),

@@ -9,6 +9,8 @@ export default async function AuthLayout({children}: {children: React.ReactNode}
   if (error || !data?.user) redirect('/login');
   
   return (
-    <div>{children}</div>
+    <>
+      {children}
+    </>
   );
 }

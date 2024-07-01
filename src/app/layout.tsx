@@ -27,7 +27,9 @@ export default function RootLayout({
       </head>
       <body className={classNames(font.className, 'box-border')}>
         <Flowbite theme={{mode: 'dark'}}>
-          {children}
+          <div>
+            {children}
+          </div>
         </Flowbite>
       </body>
     </html>
