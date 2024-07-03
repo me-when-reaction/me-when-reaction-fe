@@ -4,17 +4,18 @@ import { Button, FileInput, Label, Select, Textarea, TextInput } from 'flowbite-
 import { produce } from 'immer';
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
-import TagInput from '../tag-input/TagInput';
+import TagInput from '../../../../../../components/tag-input/TagInput';
 import * as yup from 'yup'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import ErrorHelperText from '../error-helper/ErrorHelperText';
+import ErrorHelperText from '../../../../../../components/error-helper/ErrorHelperText';
 import { useMutation } from '@tanstack/react-query';
 import { HTTPRequestClient } from '@/apis/api-client';
 import { API_ROUTE } from '@/apis/api-routes';
 import { useRouter } from 'next/navigation';
 import { parseInt } from 'lodash';
 import { useGlobalState } from '@/utilities/store';
+import { QUERY_KEYS } from '@/constants/query-key';
 
 interface InsertImageState {
   imagePreview: string,
@@ -42,7 +43,7 @@ const insertImageSchema = yup.object<InsertImageForm>().shape({
     .test('image', 'Image is required, duh', (v) => !!v && !!v[0])
     .test('fileSize', 'File too large', (value) => {
       return value && value[0] && value[0].size <= 1024 * 50
-  }),
+    }),
   name: yup.string().required('Please gimme name 🥺'),
   description: yup.string().required('Context please'),
   tags: yup.array().of(yup.string().required())
@@ -60,18 +61,19 @@ export default function InsertImage() {
     imagePreview: "",
     tags: []
   });
-  const setAlert = useGlobalState(s => s.alert.setAlert)
+  const [setAlert, queryClient] = useGlobalState(s => [s.alert.setAlert, s.query.queryClient]);
 
   const mutation = useMutation({
     mutationFn: async (data: InsertImageForm) => {
       await HTTPRequestClient({
         url: API_ROUTE.IMAGE,
         method: 'POST',
-        data: {...data, image: (data.image as FileList)[0]}
+        data: { ...data, image: (data.image as FileList)[0] }
       });
     },
     onSuccess: () => {
       setAlert('Thanks for adding new reaction :D', 'success');
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_IMAGES] });
       router.push('/');
     },
     onError: (e) => {
@@ -84,7 +86,7 @@ export default function InsertImage() {
     trigger();
   }, [trigger]);
 
-  function handleOnInsertImage(e : React.ChangeEvent<HTMLInputElement>){
+  function handleOnInsertImage(e: React.ChangeEvent<HTMLInputElement>) {
     let file = e.target.files?.item(0);
     if (!file || !['image/jpg', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type ?? '')) {
       setState(produce(state, draft => {
@@ -108,50 +110,50 @@ export default function InsertImage() {
         <h1 className='text-2xl font-bold'>Insert Image</h1>
         {(state.imagePreview && state.imagePreview.length > 0) &&
           <div className='p-1 text-center flex justify-center border-2 border-slate-500/30 bg-slate-800/50'>
-            <Image src={state.imagePreview} width="0" height="0" sizes='100%' className='w-auto h-auto max-h-[300px]' alt=""/>
+            <Image src={state.imagePreview} width="0" height="0" sizes='100%' className='w-auto h-auto max-h-[300px]' alt="" />
           </div>
         }
         <div>
-          <Label htmlFor='image' value='Image' className='font'/>
+          <Label htmlFor='image' value='Image' className='font' />
           <FileInput id='image' accept='image/*' {...register('image', {
-            onChange: handleOnInsertImage,
-          })} color={formState.errors.image && 'failure'}/>
+            onChange: handleOnInsertImage
+          })} color={formState.errors.image && 'failure'} />
           <ErrorHelperText message={formState.errors.image?.message} />
         </div>
         <div>
-          <Label htmlFor='name' value='Image Name'/>
-          <TextInput id='name' {...register('name')} placeholder='Give a meaningful name' color={formState.errors.name && 'failure'}/>
+          <Label htmlFor='name' value='Image Name' />
+          <TextInput id='name' {...register('name')} placeholder='Give a meaningful name' color={formState.errors.name && 'failure'} />
           <ErrorHelperText message={formState.errors.name?.message} />
         </div>
         <div>
-          <Label htmlFor='source' value='Image Source'/>
-          <TextInput id='source' {...register('source')} placeholder='Sauce please' color={formState.errors.source && 'failure'}/>
+          <Label htmlFor='source' value='Image Source' />
+          <TextInput id='source' {...register('source')} placeholder='Sauce please' color={formState.errors.source && 'failure'} />
           <ErrorHelperText message={formState.errors.source?.message} />
         </div>
         <div>
-          <Label htmlFor='rating' value='Age Rating'/>
+          <Label htmlFor='rating' value='Age Rating' />
           <Select {...register('rating')}>
             {Object.keys(AgeRating).filter(k => !isNaN(Number(k))).map(k => (<option value={k} key={k}>{AgeRating[k as keyof typeof AgeRating]}</option>))}
           </Select>
           <ErrorHelperText message={formState.errors.rating?.message} />
         </div>
         <div>
-          <Label htmlFor='description' value='Description'/>
+          <Label htmlFor='description' value='Description' />
           <Textarea id='description' rows={5} {...register('description')} placeholder='Give your sauce here tehe' color={formState.errors.description && 'failure'} />
           <ErrorHelperText message={formState.errors.description?.message} />
         </div>
         <div>
-          <Label value='Tags'/>
+          <Label value='Tags' />
           <Controller
             name="tags"
             defaultValue={[]}
             control={control}
-            render={({field}) => (<TagInput value={field.value} onChange={field.onChange} color={formState.errors.tags && 'failure'} />)}
+            render={({ field }) => (<TagInput value={field.value} onChange={field.onChange} color={formState.errors.tags && 'failure'} />)}
           />
           <ErrorHelperText message={formState.errors.tags?.message} />
         </div>
         <div>
-          <Button color='success' type='submit'>Submit</Button>
+          <Button color='success' type='submit' disabled={mutation.isPending}>Submit</Button>
         </div>
       </form>
     </div>

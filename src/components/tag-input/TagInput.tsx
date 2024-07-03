@@ -27,11 +27,11 @@ export default function TagInput(props: TagInputProps) {
     if ((e.key === Key.Enter || e.key === " ") && e.currentTarget.value.length > 0){
       e.preventDefault();
       let newValue = structuredClone(tag);
-      if (!newValue.includes(e.currentTarget.value.trim())) {
-        newValue.push(e.currentTarget.value.trim().replace(' ', '_'));
-        e.currentTarget.value = "";
+      if (!newValue.includes(e.currentTarget.value.trim().toLowerCase())) {
+        newValue.push(e.currentTarget.value.trim().replace(' ', '_').toLowerCase());
         props.onChange(newValue);
       }
+      e.currentTarget.value = "";
       setTag(newValue);
     }
 
@@ -45,7 +45,7 @@ export default function TagInput(props: TagInputProps) {
   function handleOnPasteTag(e : React.ClipboardEvent<HTMLInputElement>){
     e.stopPropagation();
     e.preventDefault();
-    let paste = e.clipboardData.getData('Text').split(' ').filter(x => x.length > 0);
+    let paste = e.clipboardData.getData('Text').toLowerCase().split(' ').filter(x => x.length > 0);
     setTag(_.union(tag, paste))
     props.onChange(_.union(tag, paste));
   }
