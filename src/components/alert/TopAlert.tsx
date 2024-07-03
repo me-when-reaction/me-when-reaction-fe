@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useGlobalState } from '@/utilities/store'
 import classNames from 'classnames'
 import { Alert } from 'flowbite-react'
@@ -13,6 +13,10 @@ export default function TopAlert() {
     opacity: (text.length > 0) ? 1 : 0,
     display: (text.length > 0) ? 'inline' : 'none',
     config: { ...config.stiff },
+  });
+
+  useEffect(() => {
+    setTimeout(closeAlert, 5000);
   });
 
   return (

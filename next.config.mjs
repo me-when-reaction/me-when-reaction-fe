@@ -13,6 +13,11 @@ const nextConfig = {
         hostname: "localhost",
         port: "7778",
         pathname: "/images/**"
+      },
+      {
+        protocol: 'https',
+        hostname: 'http.cat',
+        pathname: '/**'
       }
     ]
   }

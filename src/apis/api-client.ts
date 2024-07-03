@@ -9,27 +9,34 @@ import { isNil, omitBy } from "lodash";
 export async function HTTPRequestClient<TResponse, TRequest extends Record<string, any> | never>(request: BaseRequest<TRequest>, useForm: boolean = true): Promise<BaseResponse<TResponse>> {
   let supabase = await supabaseClient().auth.getSession();
   let token = supabase.data.session?.access_token
-  let formData = new FormData();
+  
+  // Kita pecah prosesnya biar GET dan DELETE punya proses sendiri biar nga mabuk
+  let url = request.url + ((request.method === "GET" || request.method === "DELETE") ?
+    ("?" + new URLSearchParams(omitBy(request.data ?? {}, isNil))) : ""
+  );
 
-  if (useForm) Object.keys(request.data!).forEach(key => {
+  let conf: RequestInit = {
+    method: request.method,
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  }
 
-    if (Array.isArray(request.data![key]))
-      request.data![key].forEach(x =>  formData.append(key + '[]', x));
+  // Jika kita kirim data pakai form, maka kita masukkan ke formData
+  if (request.method !== "GET" && request.method !== "DELETE"){
+    if (useForm) {
+      let formData = new FormData();
+      Object.keys(request.data!).forEach(key => {
+        if (Array.isArray(request.data![key]))
+          request.data![key].forEach(x =>  formData.append(key + '[]', x));
+        else formData.append(key, request.data![key])
+      });
+      conf.body = formData;
+    }
+    else conf.body = JSON.stringify(omitBy(request.data ?? {}, isNil));
+  }
 
-    else formData.append(key, request.data![key])
-  });
-
-  console.log(Object.fromEntries(formData))
-
-  const response = await (await fetch(
-    request.url + (request.method === "GET" || request.method === "DELETE" ? "?" + new URLSearchParams(omitBy(request.data ?? {}, isNil)) : ""),
-    {
-      method: request.method,
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
-      body: request.method !== "GET" && request.method !== "DELETE" ? (useForm ? formData : JSON.stringify(omitBy(request.data ?? {}, isNil))) : null
-    })).json() as BaseResponse<TResponse>;
+  const response = await(await fetch(url, conf)).json() as BaseResponse<TResponse>;
 
   if (response.statusCode / 100 !== 2) throw new RequestError(`(${response.statusCode}) ${response.message}`);
   return response;
