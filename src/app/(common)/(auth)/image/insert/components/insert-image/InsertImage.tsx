@@ -4,18 +4,17 @@ import { Button, FileInput, Label, Select, Textarea, TextInput } from 'flowbite-
 import { produce } from 'immer';
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
-import TagInput from '../../../../../../components/tag-input/TagInput';
 import * as yup from 'yup'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import ErrorHelperText from '../../../../../../components/error-helper/ErrorHelperText';
 import { useMutation } from '@tanstack/react-query';
 import { HTTPRequestClient } from '@/apis/api-client';
 import { API_ROUTE } from '@/apis/api-routes';
 import { useRouter } from 'next/navigation';
-import { parseInt } from 'lodash';
 import { useGlobalState } from '@/utilities/store';
 import { QUERY_KEYS } from '@/constants/query-key';
+import ErrorHelperText from '@/components/error-helper/ErrorHelperText';
+import TagInput from '@/components/tag-input/TagInput';
 
 interface InsertImageState {
   imagePreview: string,

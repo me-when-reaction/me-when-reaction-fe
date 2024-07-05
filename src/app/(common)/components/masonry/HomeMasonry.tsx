@@ -13,10 +13,10 @@ import FileSaver from 'file-saver';
 import classNames from 'classnames';
 import { PaginationResponse } from '@/models/response/base';
 import { Button } from 'flowbite-react';
-import { animated, useSpring, useTransition } from '@react-spring/web';
+import { animated, useSpring } from '@react-spring/web';
 import { useSearchParams } from 'next/navigation';
 import { supabaseClient } from '@/utilities/supabase-client';
-import { BsPencilSquare, BsTrash2Fill } from 'react-icons/bs';
+import { BsPencilSquare } from 'react-icons/bs';
 import Link from 'next/link';
 import Chip from '@/components/chip/Chip';
 import DeleteImage from '../delete-image/DeleteImage';
@@ -35,7 +35,6 @@ export interface HomeMasonryCardProps {
 export default function HomeMasonry(props: HomeMasonryCardProps) {
   const [searchBar, setSearchBar] = useGlobalState(x => [x.search.query, x.search.setQuery, x.alert.setAlert]);
   const param = useSearchParams();
-  const supabase = supabaseClient();
 
   useEffect(() => {
     setSearchBar(param.get('query') ?? "");
@@ -164,7 +163,7 @@ function HomeMasonryCard({ data, isLogin }: { data: GetImageResponse, isLogin: b
           <div className='flex justify-between gap-3 h-full items-center'>
             <Button color='green' className='flex-1' size='xs' disabled={state.saving} onClick={(_: any) => handleOnSteal()}>Steal</Button>
             {(isLogin) && 
-              <Link href={`/update?id=${data.id}`} passHref className='h-full'>
+              <Link href={`image/update?id=${data.id}`} passHref className='h-full'>
                 <BsPencilSquare className='flex items-center'/>
               </Link>
             }

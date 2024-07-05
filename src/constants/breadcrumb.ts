@@ -1,4 +1,3 @@
-import { BreadcrumbLiteNav } from "@/components/breadcrumb-lite/BreadcrumbLite";
 import { BsHouse } from "react-icons/bs";
 
 // type MENU = "insert-image" | "get-image" | "home"
@@ -10,10 +9,16 @@ type MENU = {
 }
 
 export const MENU_LINK = {
-  "/update": "UPDATE_IMAGE",
-  "/insert": "INSERT_IMAGE",
+  "/image/update": "UPDATE_IMAGE",
+  "/image/insert": "INSERT_IMAGE",
   "/": "HOME"
 } satisfies Record<string, keyof MENU>
+
+export interface BreadcrumbLiteNav {
+  title: string;
+  link?: keyof typeof MENU_LINK;
+  icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+}
 
 export const NAV_MENU = {
   INSERT_IMAGE: [

@@ -1,16 +1,12 @@
 'use client'
 
-import { MENU_LINK, NAV_MENU } from '@/constants/breadcrumb';
+import { BreadcrumbLiteNav, MENU_LINK, NAV_MENU } from '@/constants/breadcrumb';
 import { Breadcrumb } from 'flowbite-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
-export interface BreadcrumbLiteNav {
-  title: string;
-  link?: string;
-  icon?: React.FC<React.SVGProps<SVGSVGElement>>;
-}
+
 
 export interface BreadcrumbLiteProps {
   nav: BreadcrumbLiteNav[];
