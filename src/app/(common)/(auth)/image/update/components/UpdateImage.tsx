@@ -1,9 +1,8 @@
 'use client'
 
-import { Button, FileInput, Label, Select, Spinner, Textarea, TextInput } from 'flowbite-react'
-import { produce } from 'immer';
+import { Button, Label, Select, Spinner, Textarea, TextInput } from 'flowbite-react'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import * as yup from 'yup'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -11,13 +10,10 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { HTTPRequestClient } from '@/apis/api-client';
 import { API_ROUTE } from '@/apis/api-routes';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { parseInt } from 'lodash';
 import { useGlobalState } from '@/utilities/store';
 import ErrorHelperText from '@/components/error-helper/ErrorHelperText';
 import TagInput from '@/components/tag-input/TagInput';
-import { BaseResponse } from '@/models/response/base';
 import { GetImageResponse } from '@/models/response/image';
-import { RequestError } from '@/models/errors/RequestError';
 import { QUERY_KEYS } from '@/constants/query-key';
 
 interface InsertImageState {

@@ -6,6 +6,7 @@ import NavbarInputClient from './NavbarInput';
 import { Button } from 'flowbite-react';
 import TopAlert from '../alert/TopAlert';
 import BreadcrumbLite from '../breadcrumb-lite/BreadcrumbLite';
+import DrawerNav from '../drawer-nav/DrawerNav';
 
 export default async function NavBar() {
   let { data } = await supabaseServer().auth.getUser();
@@ -16,12 +17,7 @@ export default async function NavBar() {
     </Button>
   ) : (
     <div className='flex gap-2'>
-      <Link href='/insert' passHref>
-        <Button color='success' className='h-full'>Insert</Button>
-      </Link>
-      <form>
-        <Button color='failure' className='h-full' type='submit' formAction={Logout}>Logout</Button>
-      </form>
+      <DrawerNav/>
     </div>
   )
 

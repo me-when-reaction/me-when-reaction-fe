@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useGlobalState } from '@/utilities/store'
 import { Key } from 'ts-key-enum'
 import { TextInput } from 'flowbite-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { BsSearch } from 'react-icons/bs'
 
 export default function NavbarInputClient() {
   const router = useRouter();
@@ -27,6 +28,7 @@ export default function NavbarInputClient() {
 
   return (
     <TextInput
+      icon={() => (<BsSearch className='text-sm text-gray-500 dark:text-gray-400'/>)}
       className='w-full'
       value={text}
       onChange={e => setText(e.target.value)}
