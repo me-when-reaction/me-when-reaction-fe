@@ -4,7 +4,7 @@ import { Logout } from '@/app/(common)/action';
 import { Button, Drawer, Sidebar } from 'flowbite-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
-import { BsHash, BsHouseFill, BsImageFill, BsPerson, BsPersonFill } from 'react-icons/bs';
+import { BsHouseFill, BsImageFill } from 'react-icons/bs';
 
 export default function DrawerNav() {
   const [open, setOpen] = useState(false);

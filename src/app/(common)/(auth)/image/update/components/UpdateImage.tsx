@@ -33,7 +33,7 @@ interface UpdateImageForm {
   name: string,
   description: string,
   source: string,
-  rating: AgeRating
+  ageRating: AgeRating
 }
 
 const UpdateImageSchema = yup.object<UpdateImageForm>().shape({
@@ -45,7 +45,7 @@ const UpdateImageSchema = yup.object<UpdateImageForm>().shape({
     .min(2, e => `Must be more than ${e.min} tags`)
     .test("NotHaveX", "Does not contain X", x => x.every(y => y.indexOf('x') === -1)),
   source: yup.string().required("Respect the creator, please :("),
-  rating: yup.number().required().oneOf([AgeRating.GENERAL, AgeRating.MATURE, AgeRating.EXPLICIT])
+  ageRating: yup.number().required().oneOf([AgeRating.GENERAL, AgeRating.MATURE, AgeRating.EXPLICIT])
 });
 
 export default function InsertImage() {
@@ -66,7 +66,7 @@ export default function InsertImage() {
   });
   
 
-  const {mutate, isPending} = useMutation({
+  const {mutate, isPending, isSuccess: isMutationSuccess} = useMutation({
     mutationFn: async (data: UpdateImageForm) => {
       await HTTPRequestClient({
         url: API_ROUTE.IMAGE,
@@ -75,7 +75,7 @@ export default function InsertImage() {
       });
     },
     onSuccess: () => {
-      setAlert('Thanks for correcting the mistakes', 'success');
+      setAlert('Thanks for correcting more info. Glad you can help tehe', 'success');
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_IMAGES] });
       router.push('/');
     },
@@ -119,11 +119,11 @@ export default function InsertImage() {
                 <ErrorHelperText message={formState.errors.source?.message} />
               </div>
               <div>
-                <Label htmlFor='rating' value='Age Rating'/>
-                <Select {...register('rating', { value: AgeRating[data.ageRating] })}>
+                <Label htmlFor='ageRating' value='Age Rating'/>
+                <Select {...register('ageRating', { value: AgeRating[data.ageRating] })}>
                   {Object.keys(AgeRating).filter(k => !isNaN(Number(k))).map(k => (<option value={k} key={k}>{AgeRating[k as keyof typeof AgeRating]}</option>))}
                 </Select>
-                <ErrorHelperText message={formState.errors.rating?.message} />
+                <ErrorHelperText message={formState.errors.ageRating?.message} />
               </div>
               <div>
                 <Label htmlFor='description' value='Description'/>
@@ -141,7 +141,7 @@ export default function InsertImage() {
                 <ErrorHelperText message={formState.errors.tags?.message} />
               </div>
               <div>
-                <Button color={isPending ? 'gray': 'success'} type='submit' disabled={isPending}>Submit</Button>
+                <Button color={isPending ? 'gray': 'success'} type='submit' disabled={isPending || isMutationSuccess}>Submit</Button>
               </div>
             </>
           )

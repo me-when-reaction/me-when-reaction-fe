@@ -8,6 +8,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import ErrorHelperText from '@/components/error-helper/ErrorHelperText';
+import { toFormData } from '@/utilities/form';
 
 export interface LoginForm {
   email: string,
@@ -24,9 +25,8 @@ export default function LoginFormPage() {
   const [state, formAction] = useFormState(login, { message: "" });
   const ref = useRef<HTMLFormElement>(null);
 
-  const handleOnSubmit: SubmitHandler<LoginForm> = (_, e) => {
-    e?.preventDefault();
-    ref.current?.submit();
+  const handleOnSubmit: SubmitHandler<LoginForm> = (data) => {
+    formAction(toFormData(data));
   }
 
   return (

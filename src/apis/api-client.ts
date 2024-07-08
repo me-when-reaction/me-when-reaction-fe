@@ -3,6 +3,7 @@
 import { RequestError } from "@/models/errors/RequestError";
 import { BaseRequest } from "@/models/request/base";
 import { BaseResponse } from "@/models/response/base";
+import { toFormData } from "@/utilities/form";
 import { supabaseClient } from "@/utilities/supabase-client";
 import { isNil, omitBy } from "lodash";
 
@@ -24,15 +25,7 @@ export async function HTTPRequestClient<TResponse, TRequest extends Record<strin
 
   // Jika kita kirim data pakai form, maka kita masukkan ke formData
   if (request.method !== "GET" && request.method !== "DELETE"){
-    if (useForm) {
-      let formData = new FormData();
-      Object.keys(request.data!).forEach(key => {
-        if (Array.isArray(request.data![key]))
-          request.data![key].forEach(x =>  formData.append(key + '[]', x));
-        else formData.append(key, request.data![key])
-      });
-      conf.body = formData;
-    }
+    if (useForm && request.data) conf.body = toFormData(request.data!);
     else conf.body = JSON.stringify(omitBy(request.data ?? {}, isNil));
   }
 
