@@ -33,7 +33,7 @@ interface InsertImageForm {
   name: string,
   description: string,
   source: string,
-  rating: AgeRating
+  ageRating: AgeRating
 }
 
 const insertImageSchema = yup.object<InsertImageForm>().shape({
@@ -50,7 +50,7 @@ const insertImageSchema = yup.object<InsertImageForm>().shape({
     .min(2, e => `Must be more than ${e.min} tags`)
     .test("NotHaveX", "Does not contain X", x => x.every(y => y.indexOf('x') === -1)),
   source: yup.string().required("Respect the creator, please :("),
-  rating: yup.number().required().oneOf([AgeRating.GENERAL, AgeRating.MATURE, AgeRating.EXPLICIT])
+  ageRating: yup.number().required().oneOf([AgeRating.GENERAL, AgeRating.MATURE, AgeRating.EXPLICIT])
 });
 
 export default function InsertImage() {
@@ -73,7 +73,7 @@ export default function InsertImage() {
     onSuccess: () => {
       setAlert('Thanks for adding new reaction :D', 'success');
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_IMAGES] });
-      router.push('/');
+      // router.push('/');
     },
     onError: (e) => {
       setAlert(e.message, 'failure');
@@ -130,15 +130,15 @@ export default function InsertImage() {
           <ErrorHelperText message={formState.errors.source?.message} />
         </div>
         <div>
-          <Label htmlFor='rating' value='Age Rating' />
-          <Select {...register('rating')}>
+          <Label htmlFor='ageRating' value='Age Rating' />
+          <Select {...register('ageRating')}>
             {Object.keys(AgeRating).filter(k => !isNaN(Number(k))).map(k => (<option value={k} key={k}>{AgeRating[k as keyof typeof AgeRating]}</option>))}
           </Select>
-          <ErrorHelperText message={formState.errors.rating?.message} />
+          <ErrorHelperText message={formState.errors.ageRating?.message} />
         </div>
         <div>
           <Label htmlFor='description' value='Description' />
-          <Textarea id='description' rows={5} {...register('description')} placeholder='Give your sauce here tehe' color={formState.errors.description && 'failure'} />
+          <Textarea id='description' rows={5} {...register('description')} placeholder='Translate pls if not ENG' color={formState.errors.description && 'failure'} />
           <ErrorHelperText message={formState.errors.description?.message} />
         </div>
         <div>
@@ -152,7 +152,7 @@ export default function InsertImage() {
           <ErrorHelperText message={formState.errors.tags?.message} />
         </div>
         <div>
-          <Button color='success' type='submit' disabled={mutation.isPending}>Submit</Button>
+          <Button color='success' type='submit' disabled={mutation.isPending || mutation.isSuccess}>Submit</Button>
         </div>
       </form>
     </div>

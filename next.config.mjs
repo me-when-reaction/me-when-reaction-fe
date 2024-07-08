@@ -15,6 +15,11 @@ const nextConfig = {
         pathname: "/images/**"
       },
       {
+        protocol: "https",
+        hostname: "dobdkvtatcbahlfxeriy.supabase.co",
+        pathname: "/**"
+      },
+      {
         protocol: 'https',
         hostname: 'http.cat',
         pathname: '/**'

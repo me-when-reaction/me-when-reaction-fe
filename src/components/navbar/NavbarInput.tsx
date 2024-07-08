@@ -22,7 +22,7 @@ export default function NavbarInputClient() {
     if (e.key === Key.Enter) {
       setQuery(text)
       let q = new URLSearchParams({ query: text });
-      if (pathname !== '/') router.push('/?' + q);
+      router.push('/?' + q);
     };
   }
 
