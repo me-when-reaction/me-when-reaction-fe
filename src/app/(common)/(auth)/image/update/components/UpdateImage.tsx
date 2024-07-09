@@ -16,11 +16,6 @@ import TagInput from '@/components/tag-input/TagInput';
 import { GetImageResponse } from '@/models/response/image';
 import { QUERY_KEYS } from '@/constants/query-key';
 
-interface InsertImageState {
-  imagePreview: string,
-  tags: string[]
-}
-
 enum AgeRating {
   GENERAL,
   MATURE,

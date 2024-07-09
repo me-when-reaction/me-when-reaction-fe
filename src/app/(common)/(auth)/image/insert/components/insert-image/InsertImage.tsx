@@ -73,7 +73,7 @@ export default function InsertImage() {
     onSuccess: () => {
       setAlert('Thanks for adding new reaction :D', 'success');
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.GET_IMAGES] });
-      // router.push('/');
+      router.push('/');
     },
     onError: (e) => {
       setAlert(e.message, 'failure');
