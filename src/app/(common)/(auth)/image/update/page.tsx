@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Update existing Reaction Image",
+    title: "Update existing Reaction Image - Me When Reaction",
     robots: "noindex, nofollow"
   }
 }

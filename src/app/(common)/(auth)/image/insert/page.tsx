@@ -4,7 +4,7 @@ import React from 'react'
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Insert new Reaction Image",
+    title: "Insert new Reaction Image - Me When Reaction",
     robots: "noindex, nofollow"
   }
 }

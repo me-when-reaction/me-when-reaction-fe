@@ -5,7 +5,7 @@ import { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Me When",
+    title: "Home - Me When Reaction",
     robots: "noindex, nofollow"
   }
 }
