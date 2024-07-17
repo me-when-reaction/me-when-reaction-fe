@@ -37,8 +37,7 @@ const UpdateImageSchema = yup.object<UpdateImageForm>().shape({
   description: yup.string().required('Context please'),
   tags: yup.array().of(yup.string().required())
     .required()
-    .min(2, e => `Must be more than ${e.min} tags`)
-    .test("NotHaveX", "Does not contain X", x => x.every(y => y.indexOf('x') === -1)),
+    .min(2, e => `Must be more than ${e.min} tags`),
   source: yup.string().required("Respect the creator, please :("),
   ageRating: yup.number().required().oneOf([AgeRating.GENERAL, AgeRating.MATURE, AgeRating.EXPLICIT])
 });

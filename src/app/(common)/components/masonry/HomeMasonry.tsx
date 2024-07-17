@@ -40,6 +40,7 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
   useEffect(() => {
     setSearchBar(param.get('query') ?? "");
   }, [param, setSearchBar]);
+
   const { data, fetchNextPage, status, hasNextPage } = useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_IMAGES, searchBar, rating],
     initialPageParam: 1,

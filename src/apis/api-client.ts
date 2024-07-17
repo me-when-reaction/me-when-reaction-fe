@@ -9,12 +9,19 @@ import { isNil, omitBy } from "lodash";
 
 export async function HTTPRequestClient<TResponse, TRequest extends Record<string, any> | never>(request: BaseRequest<TRequest>, useForm: boolean = true): Promise<BaseResponse<TResponse>> {
   let supabase = await supabaseClient().auth.getSession();
-  let token = supabase.data.session?.access_token
+  let token = supabase.data.session?.access_token;
   
   // Kita pecah prosesnya biar GET dan DELETE punya proses sendiri biar nga mabuk
-  let url = request.url + ((request.method === "GET" || request.method === "DELETE") ?
-    ("?" + new URLSearchParams(omitBy(request.data ?? {}, isNil))) : ""
-  );
+
+  let url = request.url;
+  if (request.method === "GET" || request.method === "DELETE") {
+    let arrayParams = Object.entries(omitBy(request.data ?? {}, isNil))
+      .flatMap(([k, v]) => {
+        if (Array.isArray(v)) return v.map(x => ([k, x]));
+        else return [[k, v]]
+      });
+    url = url + "?" + new URLSearchParams(arrayParams);
+  }
 
   let conf: RequestInit = {
     method: request.method,
