@@ -6,7 +6,6 @@ import { Button } from 'flowbite-react';
 import TopAlert from '../alert/TopAlert';
 import BreadcrumbLite from '../breadcrumb-lite/BreadcrumbLite';
 import DrawerNav from '../drawer-nav/DrawerNav';
-import NavbarInputPlainClient from './NavbarInputPlain';
 
 export default async function NavBar() {
   let { data } = await supabaseServer().auth.getUser();
@@ -24,7 +23,8 @@ export default async function NavBar() {
   return (
     <div className='sticky top-0 z-[999]'>
       <nav className='w-full p-4 pb-0 flex bg-[#0D1636] text-white d-flex justify-between gap-3'>
-        <NavbarInputPlainClient/>
+        {/* <NavbarInputPlainClient/> */}
+        <NavbarInputClient/>
         {component}
       </nav>
       <TopAlert/>

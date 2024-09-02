@@ -81,7 +81,7 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
     >
       <Masonry gutter='1rem'>
         {
-          (data?.pages?.flatMap(x => x.data) ?? []).map((x, idx) => (<HomeMasonryCard data={x} key={x.id} isLogin={props.isLogin} />))
+          (data?.pages?.flatMap(x => x.data) ?? []).map(x => (<HomeMasonryCard data={x} key={x.id} isLogin={props.isLogin} />))
         }
       </Masonry>
     </ResponsiveMasonry>
@@ -109,7 +109,6 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
     </div>
   )
 }
-
 
 function HomeMasonryCard({ data, isLogin }: { data: GetImageResponse, isLogin: boolean }) {
   const [state, setState] = useState<HomeMasonryCardState>({
@@ -165,20 +164,9 @@ function HomeMasonryCard({ data, isLogin }: { data: GetImageResponse, isLogin: b
             })} />
         </div>
         <div className='h-full flex flex-col gap-1'>
-          <div
-            className='text-center italic text-sm hover:text-blue-300 cursor-pointer hover:underline'
-            onClick={() => { setState({ ...state, open: !state.open }) }}
-          >{data.name}</div>
-          <div className={classNames(
-            'text-xs',
-            { 'hidden': !state.open }
-          )}>
-            <p>
-              🍅: {data.source}
-            </p>
-            <p>
-              🗣: {data.description}
-            </p>
+          <div className='text-xs break-words'>
+            <p>🍅: {data.source}</p>
+            <p>🗣: {data.description}</p>
           </div>
           <div className='flex gap-1 flex-wrap my-2'>
             {data.tags.map(t => (<Chip text={t} key={t} />))}

@@ -6,15 +6,14 @@ import { Key } from 'ts-key-enum'
 import { Button, TextInput } from 'flowbite-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { BsSearch } from 'react-icons/bs'
-import { current, produce } from 'immer'
+import { produce } from 'immer'
 import classNames from 'classnames'
-import QueryWrapper from '@/app/(common)/components/query-wrapper/query-client-component'
-import { QueryClientProvider, useQuery } from '@tanstack/react-query'
 import { HTTPRequestClient } from '@/apis/api-client'
 import { API_ROUTE } from '@/apis/api-routes'
 import { GetTagSuggestionResponse } from '@/models/response/tag'
-import { useReducedMotion } from '@react-spring/web'
 import { useOutsideClick } from '@/hooks/hooks'
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
+import { useQuery } from '@tanstack/react-query'
 
 const TEXT: string[] = [
   "auto",
@@ -43,9 +42,28 @@ export default function NavbarInputClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [suggest, setSuggest] = useState<Suggestion>(initSuggestion);
-  const [text, setText, setQuery] = useGlobalState(s => [s.search.text, s.search.setText, s.search.setQuery])
+  const [text, setText, setQuery, queryClient] = useGlobalState(s => [s.search.text, s.search.setText, s.search.setQuery, s.query.queryClient])
   const textRef = useRef<HTMLInputElement>(null);
   const inputAreaRef = useRef<HTMLDivElement>(null);
+
+  // Coba pasang useQuery biar mantul
+  const suggestionQuery = useQuery({
+    enabled: suggest.input.length >= 3,
+    queryKey: [suggest.input],
+    queryFn: async () => {
+      let res = await HTTPRequestClient<GetTagSuggestionResponse[], { query: string }>({
+        method: "GET",
+        url: `${API_ROUTE.TAG}/search`,
+        data: {
+          query: suggest.input
+        }
+      });
+      setSuggest(produce(x => {
+        x.filtered = res.data.filter(x => !text.split(' ').includes(x.name)).map(x => ({ label: x.nameCount, value: x.name }));
+        x.index = 1;
+      }));
+    }
+  }, queryClient);
 
   useOutsideClick(inputAreaRef, () => {
     setSuggest(produce(x => {
@@ -80,48 +98,81 @@ export default function NavbarInputClient() {
     router.push('/?' + q);
   }
 
-  const onInputText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let input = e.target.value;
+
+  // Biar pending dulu inputnya sampai berhenti 1500ms
+  const handleOnDebounceInput = useDebouncedCallback((input: string) => {
     let lastInput = input.split(' ').at(-1) ?? "";
-    let currentTags = text.split(' ');
-    if (lastInput.length >= 3) {
-      HTTPRequestClient<GetTagSuggestionResponse[], { query: string }>({
-        method: "GET",
-        url: `${API_ROUTE.TAG}/search`,
-        data: {
-          query: lastInput
-        }
-      }).then(res => {
-        setSuggest(produce(x => {
-          x.input = lastInput;
-          x.filtered = res.data.filter(x => !currentTags.includes(x.name)).map(x => ({ label: x.nameCount, value: x.name }));
-          x.index = 0;
-        }));
-      });
-    }
-    else {
-      setSuggest(produce(x => {
-        x.input = lastInput;
-        x.filtered = []
-        x.index = 0;
-      }));
-    }
-    setText(input);
-  }
+    setSuggest(produce(x => {
+      x.input = lastInput;
+    }));
+    // if (lastInput.length >= 3) {
+    //   HTTPRequestClient<GetTagSuggestionResponse[], { query: string }>({
+    //     method: "GET",
+    //     url: `${API_ROUTE.TAG}/search`,
+    //     data: {
+    //       query: lastInput
+    //     }
+    //   }).then(res => {
+    //     setSuggest(produce(x => {
+    //       x.input = lastInput;
+    //       x.filtered = res.data.filter(x => !currentTags.includes(x.name)).map(x => ({ label: x.nameCount, value: x.name }));
+    //       x.index = 0;
+    //     }));
+    //   });
+    // }
+    // else {
+    //   setSuggest(produce(x => {
+    //     x.input = lastInput;
+    //     x.filtered = []
+    //     x.index = 0;
+    //   }));
+    // }
+  }, 500);
+
+  // const onInputText = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   let input = e.target.value;
+  //   let lastInput = input.split(' ').at(-1) ?? "";
+  //   let currentTags = text.split(' ');
+  //   setText(input);
+
+  //   if (lastInput.length >= 3) {
+  //     HTTPRequestClient<GetTagSuggestionResponse[], { query: string }>({
+  //       method: "GET",
+  //       url: `${API_ROUTE.TAG}/search`,
+  //       data: {
+  //         query: lastInput
+  //       }
+  //     }).then(res => {
+  //       setSuggest(produce(x => {
+  //         x.input = lastInput;
+  //         x.filtered = res.data.filter(x => !currentTags.includes(x.name)).map(x => ({ label: x.nameCount, value: x.name }));
+  //         x.index = 0;
+  //       }));
+  //     });
+  //   }
+  //   else {
+  //     setSuggest(produce(x => {
+  //       x.input = lastInput;
+  //       x.filtered = []
+  //       x.index = 0;
+  //     }));
+  //   }
+  // }
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === Key.Enter && suggest.filtered.length <= 0) applyQuery();
+    if (e.key === Key.Enter && (suggest.filtered.length <= 0 || suggest.index === 0)) applyQuery();
     else if (e.key === Key.Enter && suggest.filtered.length > 0) {
-      appendSuggestion(suggest.filtered[suggest.index].value);
+      console.log(suggest);
+      appendSuggestion(suggest.filtered[suggest.index - 1].value);
     }
     else if (e.key === Key.ArrowUp) {
       setSuggest(produce(x => {
-        x.index = mod(x.index - 1, x.filtered.length);
+        x.index = mod(x.index - 1, x.filtered.length + 1);
       }));
     }
     else if (e.key === Key.ArrowDown) {
       setSuggest(produce(x => {
-        x.index = mod(x.index + 1, x.filtered.length);
+        x.index = mod(x.index + 1, x.filtered.length + 1);
       }));
     }
   }
@@ -133,7 +184,11 @@ export default function NavbarInputClient() {
           ref={textRef}
           className='w-full rounded-tr-none rounded-br-none'
           value={text}
-          onChange={onInputText}
+          // onChange={onInputText}
+          onChange={e => {
+            setText(e.target.value);
+            handleOnDebounceInput(e.target.value);
+          }}
           placeholder='Put your tags here'
           onKeyUp={onKeyPress}
           style={{
@@ -142,14 +197,19 @@ export default function NavbarInputClient() {
           }}
 
         />
-        { (suggest.input.length > 0 && suggest.filtered.length > 0) &&
+        { (suggestionQuery.isFetching || (suggest.input.length > 0 && suggest.filtered.length > 0)) &&
           <div className='absolute left-0 bg-gray-700 w-full rounded-md'>
             <ul className='p-1'>
-              {suggest.filtered.map((x, idx) => (
-                <li key={x.value} className={classNames('hover:bg-gray-600 p-1 rounded-md cursor-pointer', {
-                  'bg-gray-500 hover:bg-gray-500': idx === suggest.index
-                })} onClick={() => appendSuggestion(x.value)}>{x.label}</li>
-              ))}
+              { suggestionQuery.isFetching ? <li className='rounded-md'>Fetching Suggestion...</li> :
+                suggest.filtered.map((x, idx) => (
+                  <li key={x.value}
+                    className={classNames('hover:bg-gray-600 p-1 rounded-md cursor-pointer', {
+                      'bg-gray-500 hover:bg-gray-500': idx === (suggest.index - 1)
+                    })}
+                    onClick={() => appendSuggestion(x.value)}>{x.label}
+                  </li>
+                ))
+              }
             </ul>
           </div>
         }

@@ -7,6 +7,13 @@ import { toFormData } from "@/utilities/form";
 import { supabaseClient } from "@/utilities/supabase-client";
 import { isNil, omitBy } from "lodash";
 
+/**
+ * Bikin HTTP Request ke API
+ * 
+ * @param request Request yang ingin dikirim
+ * @param useForm Apakah pas ngirim pakai multipart/form-data? Jika tidak, pakai JSON
+ * @returns BaseResponse<TResponse>
+ */
 export async function HTTPRequestClient<TResponse, TRequest extends Record<string, any> | never>(request: BaseRequest<TRequest>, useForm: boolean = true): Promise<BaseResponse<TResponse>> {
   let supabase = await supabaseClient().auth.getSession();
   let token = supabase.data.session?.access_token;

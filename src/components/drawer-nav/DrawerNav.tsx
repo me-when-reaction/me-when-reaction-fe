@@ -1,35 +1,36 @@
 'use client'
 
 import { Logout } from '@/app/(common)/action';
+import { Route, ROUTES } from '@/constants/routes';
 import { Button, Drawer, Sidebar } from 'flowbite-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
-import { BsHouseFill, BsImageFill } from 'react-icons/bs';
 
 export default function DrawerNav() {
   const [open, setOpen] = useState(false);
-
   const closeDrawer = () => setOpen(false);
+
+  const renderSidebarOptions = (route: Route) => {
+    if (route.type === 'single') return (
+      <Sidebar.Item key={route.name} as={Link} href={route.action} onClick={closeDrawer} icon={route.icon}>{route.name}</Sidebar.Item>
+    )    
+    else return (
+      <Sidebar.Collapse key={route.name} label={route.name} icon={route.icon as React.FunctionComponent<React.SVGProps<SVGSVGElement>>}>
+        {route.action.map(r => renderSidebarOptions(r))}
+      </Sidebar.Collapse>
+    )
+  }
 
   return (
     <>
       <Button color='grey' onClick={() => { setOpen(true); }}>Menu</Button>
       <Drawer open={open} onClose={closeDrawer} position='right'>
-        <Drawer.Header title='Me When ...' titleIcon={() => <></>}></Drawer.Header>
+        <Drawer.Header title='Menu' titleIcon={() => <></>}></Drawer.Header>
         <Drawer.Items>
           <Sidebar>
             <Sidebar.Items>
               <Sidebar.ItemGroup>
-                <Sidebar.Item as={Link} href="/" onClick={closeDrawer} icon={() => (<BsHouseFill className='text-sm'/>)}>Home</Sidebar.Item> 
-                <Sidebar.Collapse label='Images' icon={() => (<BsImageFill className='text-sm'/>)}> 
-                  <Sidebar.Item as={Link} onClick={closeDrawer} href="/image/insert">Insert Image</Sidebar.Item>
-                </Sidebar.Collapse>
-                {/* <Sidebar.Collapse label='Tags' icon={() => (<BsHash className='text-sm'/>)}> 
-                  <Sidebar.Item as={Link} onClick={closeDrawer} href="/tag/manage">Manage Tag</Sidebar.Item>
-                </Sidebar.Collapse>
-                <Sidebar.Collapse label='Users' icon={() => (<BsPersonFill className='text-sm'/>)}> 
-                  <Sidebar.Item as={Link} onClick={closeDrawer} href="/tag/manage">Manage Users</Sidebar.Item>
-                </Sidebar.Collapse> */}
+                {ROUTES.map(r => renderSidebarOptions(r))}
               </Sidebar.ItemGroup>
               <Sidebar.ItemGroup>
                 <Sidebar.Item as={() => (

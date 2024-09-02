@@ -39,9 +39,13 @@ interface InsertImageForm {
 const insertImageSchema = yup.object<InsertImageForm>().shape({
   image: yup.mixed<FileList>()
     .required("File is required")
-    .test('image', 'Image is required, duh', (v) => !!v && !!v[0])
-    .test('fileSize', 'File too large', (value) => {
-      return value && value[0] && value[0].size <= 1024 * 50
+    .test('image', 'Image is required, duh', (v) => {
+      return !!v &&
+        !!v[0] &&
+        ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'].includes(v[0].type ?? '')
+    })
+    .test('fileSize', 'File too large. Must be 20KB or smaller', (value) => {
+      return value && value[0] && value[0].size <= 1024 * 20
     }),
   name: yup.string().required('Please gimme name 🥺'),
   description: yup.string().required('Context please'),
