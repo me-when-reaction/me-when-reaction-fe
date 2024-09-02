@@ -1,6 +1,6 @@
 import React from 'react'
 import { supabaseServer } from '@/utilities/supabase-server';
-import HomeMasonry from './components/masonry/HomeMasonry';
+import HomeMasonry from '../../components/app/dashboard/masonry/HomeMasonry';
 import { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {

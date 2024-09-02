@@ -1,4 +1,4 @@
-import InsertImage from '@/app/(common)/(auth)/image/insert/components/insert-image/InsertImage'
+import InsertImage from '@/components/app/image/insert-image/InsertImage'
 import { Metadata } from 'next'
 import React from 'react'
 

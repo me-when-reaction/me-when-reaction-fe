@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 import flowbite from "flowbite-react/tailwind";
+import ts from 'tailwind-scrollbar';
 
 
 const config: Config = {
@@ -23,7 +24,8 @@ const config: Config = {
     },
   },
   plugins: [
-    flowbite.plugin()
+    flowbite.plugin(),
+    ts
   ],
 };
 export default config;

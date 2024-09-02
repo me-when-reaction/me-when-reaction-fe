@@ -1,6 +1,6 @@
 'use client'
 
-import BreadcrumbLite from '@/components/breadcrumb-lite/BreadcrumbLite'
+import BreadcrumbLite from '@/components/common/breadcrumb-lite/BreadcrumbLite'
 import { useGlobalState } from '@/utilities/store'
 import { QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'

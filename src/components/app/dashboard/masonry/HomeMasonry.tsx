@@ -17,7 +17,7 @@ import { animated, useSpring } from '@react-spring/web';
 import { useSearchParams } from 'next/navigation';
 import { BsPencilSquare } from 'react-icons/bs';
 import Link from 'next/link';
-import Chip from '@/components/chip/Chip';
+import Chip from '@/components/common/chip/Chip';
 import DeleteImage from '../delete-image/DeleteImage';
 import { QUERY_KEYS } from '@/constants/query-key';
 

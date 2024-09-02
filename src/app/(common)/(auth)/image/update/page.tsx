@@ -1,5 +1,5 @@
 import React from 'react'
-import UpdateImage from './components/UpdateImage'
+import UpdateImage from '../../../../../components/app/image/update-image/UpdateImage'
 import { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {

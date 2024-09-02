@@ -25,6 +25,9 @@ export interface AlertState {
   closeAlert: () => void;
 }
 
+/**
+ * @deprecated Ganti ke yang baru
+ */
 export interface SearchState {
   /** Untuk searchbar saja */
   text: string;
@@ -35,9 +38,17 @@ export interface SearchState {
   setQuery: (input: string) => void
 }
 
+export interface NewSearchState {
+  query: string[];
+  appendQuery: (input: string) => void,
+  removeQuery: (input: string) => void,
+  popQuery: () => void
+}
+
 export interface GlobalState {
   user: UserState | null;
   search: SearchState;
+  newSearch: NewSearchState;
   alert: AlertState;
   query: QueryState;
   
@@ -54,6 +65,18 @@ export const useGlobalState = create<GlobalState>()(
         query: "",
         setQuery: (input) => set(produce<GlobalState>((s) => { s.search.query = input })),
         setText: (input) => set(produce<GlobalState>((s) => { s.search.text = input })),
+      },
+      newSearch: {
+        query: [],
+        appendQuery: (input) => set(produce<GlobalState>((d) => {
+          if (d.newSearch.query.indexOf(input) === -1) d.newSearch.query.push(input);
+        })),
+        removeQuery: (input) => set(produce<GlobalState>((d) => {
+          d.newSearch.query = d.newSearch.query.filter(x => x !== input);
+        })),
+        popQuery: () => set(produce<GlobalState>((d) => {
+          d.newSearch.query.pop();
+        })),
       },
       alert: {
         text: "",

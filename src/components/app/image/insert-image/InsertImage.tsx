@@ -13,8 +13,8 @@ import { API_ROUTE } from '@/apis/api-routes';
 import { useRouter } from 'next/navigation';
 import { useGlobalState } from '@/utilities/store';
 import { QUERY_KEYS } from '@/constants/query-key';
-import ErrorHelperText from '@/components/error-helper/ErrorHelperText';
-import TagInput from '@/components/tag-input/TagInput';
+import ErrorHelperText from '@/components/common/error-helper/ErrorHelperText';
+import TagInput from '@/components/common/tag-input/TagInput';
 
 interface InsertImageState {
   imagePreview: string,
