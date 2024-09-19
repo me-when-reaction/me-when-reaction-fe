@@ -3,47 +3,23 @@
 import { Button, Label, Select, Spinner, Textarea, TextInput } from 'flowbite-react'
 import Image from 'next/image'
 import React from 'react'
-import * as yup from 'yup'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { HTTPRequestClient } from '@/apis/api-client';
-import { API_ROUTE } from '@/apis/api-routes';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGlobalState } from '@/utilities/store';
 import ErrorHelperText from '@/components/common/error-helper/ErrorHelperText';
 import TagInput from '@/components/common/tag-input/TagInput';
-import { GetImageResponse } from '@/models/response/image';
 import { QUERY_KEYS } from '@/constants/query-key';
-
-enum AgeRating {
-  GENERAL,
-  MATURE,
-  EXPLICIT
-}
-
-interface UpdateImageForm {
-  tags: string[],
-  id: string,
-  name: string,
-  description: string,
-  source: string,
-  ageRating: AgeRating
-}
-
-const UpdateImageSchema = yup.object<UpdateImageForm>().shape({
-  id: yup.string().required().uuid(),
-  name: yup.string().required('Please gimme name 🥺'),
-  description: yup.string().required('Context please'),
-  tags: yup.array().of(yup.string().required())
-    .required()
-    .min(2, e => `Must be more than ${e.min} tags`),
-  source: yup.string().required("Respect the creator, please :("),
-  ageRating: yup.number().required().oneOf([AgeRating.GENERAL, AgeRating.MATURE, AgeRating.EXPLICIT])
-});
+import { UpdateImageRequest, UpdateImageRequestSchema } from '@/models/request/image'
+import { NewGetImageResponse } from '@/models/response/image'
+import { AgeRating } from '@/constants/image'
+import { API_DETAIL } from '@/configuration/api'
+import HTTPMethod from 'http-method-enum'
 
 export default function InsertImage() {
-  const { register, handleSubmit, formState, control } = useForm<UpdateImageForm>({ resolver: yupResolver<UpdateImageForm>(UpdateImageSchema), mode: 'onChange' });
+  const { register, handleSubmit, formState, control } = useForm<UpdateImageRequest>({ resolver: zodResolver(UpdateImageRequestSchema), mode: 'onChange' });
   const router = useRouter();
   const param = useSearchParams().get('id');
   const [setAlert, queryClient] = useGlobalState(s => [s.alert.setAlert, s.query.queryClient]);
@@ -51,9 +27,9 @@ export default function InsertImage() {
   const { data, isLoading, isError, isSuccess } = useQuery({
     queryKey: [param],
     queryFn: async() => {
-      let d = await HTTPRequestClient<GetImageResponse, never>({
-        url: API_ROUTE.IMAGE + `/${param}`,
-        method: 'GET'
+      let d = await HTTPRequestClient<NewGetImageResponse, never>({
+        url: API_DETAIL.IMAGE.route + `/${param}`,
+        method: HTTPMethod.GET
       });
       return d.data!;
     }
@@ -61,10 +37,10 @@ export default function InsertImage() {
   
 
   const {mutate, isPending, isSuccess: isMutationSuccess} = useMutation({
-    mutationFn: async (data: UpdateImageForm) => {
+    mutationFn: async (data: UpdateImageRequest) => {
       await HTTPRequestClient({
-        url: API_ROUTE.IMAGE,
-        method: 'PATCH',
+        url: API_DETAIL.IMAGE.route,
+        method: HTTPMethod.PATCH,
         data: {...data, id: param}
       });
     },
@@ -78,7 +54,7 @@ export default function InsertImage() {
     }
   });
 
-  const onSubmits: SubmitHandler<UpdateImageForm> = (data, e) => {
+  const onSubmits: SubmitHandler<UpdateImageRequest> = (data, e) => {
     e?.preventDefault();
     mutate(data);
   }
@@ -114,7 +90,7 @@ export default function InsertImage() {
               </div>
               <div>
                 <Label htmlFor='ageRating' value='Age Rating'/>
-                <Select {...register('ageRating', { value: AgeRating[data.ageRating] })}>
+                <Select {...register('ageRating', { value: data.ageRating })}>
                   {Object.keys(AgeRating).filter(k => !isNaN(Number(k))).map(k => (<option value={k} key={k}>{AgeRating[k as keyof typeof AgeRating]}</option>))}
                 </Select>
                 <ErrorHelperText message={formState.errors.ageRating?.message} />

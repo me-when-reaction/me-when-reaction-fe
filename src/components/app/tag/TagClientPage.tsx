@@ -1,13 +1,14 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
 import { HTTPRequestClient } from '@/apis/api-client';
-import { API_ROUTE } from '@/apis/api-routes';
 import { GetTagManagementResponse } from '@/models/response/tag';
 import { Table } from 'flowbite-react';
 import { PaginationResponse } from '@/models/response/base';
+import { API_DETAIL } from '@/configuration/api';
+import HTTPMethod from 'http-method-enum';
 
 interface TagColumn {
   name: string,
@@ -37,8 +38,8 @@ export default function TagClientPage() {
     queryKey: ["a"],
     queryFn: async() => {
       let resp = await HTTPRequestClient<PaginationResponse<GetTagManagementResponse[]>, never>({
-        method: "GET",
-        url: `${API_ROUTE.TAG}`
+        method: HTTPMethod.GET,
+        url: API_DETAIL.TAG.route
       })
 
       let x = resp.data.data.map(x => ({
@@ -61,13 +62,6 @@ export default function TagClientPage() {
       <Table>
         <Table.Head>
           {
-            // table.getHeaderGroups().flatMap(headerGroup => {
-            //   return headerGroup.headers.map(header => (
-            //     <Table.HeadCell key={header.id}>
-            //       { header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext()) }
-            //     </Table.HeadCell>
-            //   ));
-            // })
             table.getHeaderGroups()[0].headers.map(header => (
               <Table.HeadCell key={header.id}>
                 { header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext()) }

@@ -34,17 +34,17 @@ export const ROUTES : Route[] = [
         action: "/image/insert"
       }
     ]
-  },
-  {
-    name: "Tag",
-    type: 'nested',
-    icon: () => (<BsHash/>),
-    action: [
-      {
-        name: "Manage Tags",
-        type: 'single',
-        action: "/tag"
-      }
-    ]
   }
+  // {
+  //   name: "Tag",
+  //   type: 'nested',
+  //   icon: () => (<BsHash/>),
+  //   action: [
+  //     {
+  //       name: "Manage Tags",
+  //       type: 'single',
+  //       action: "/tag"
+  //     }
+  //   ]
+  // }
 ] 

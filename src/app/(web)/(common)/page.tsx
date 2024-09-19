@@ -1,7 +1,7 @@
 import React from 'react'
 import { supabaseServer } from '@/utilities/supabase-server';
-import HomeMasonry from '../../components/app/dashboard/masonry/HomeMasonry';
 import { Metadata } from 'next';
+import HomeMasonry from '@/components/app/dashboard/masonry/HomeMasonry';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -11,7 +11,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-
   const supabase = (await supabaseServer().auth.getUser())?.data?.user;
 
   return (

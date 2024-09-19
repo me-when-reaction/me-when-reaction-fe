@@ -2,13 +2,6 @@ import { updateSession } from "@/utilities/supabase-server";
 import { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest){
-  // const url = request.nextUrl.clone();
-  // url.pathname = '/login'
-  // if (!request.nextUrl.pathname.startsWith("/login")){
-  //   const supabase = supabaseServer();
-  //   const { data, error } = await supabase.auth.getUser();
-  //   if (error || !data?.user) return NextResponse.rewrite(url);
-  // }
   return await updateSession(request);
 }
 

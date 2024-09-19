@@ -5,9 +5,9 @@ import React, { useEffect, useState } from 'react';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { API_ROUTE } from '@/apis/api-routes';
-import { GetImageResponse } from '@/models/response/image';
+import { GetImageResponse, NewGetImageResponse } from '@/models/response/image';
 import { HTTPRequestClient } from '@/apis/api-client';
-import { AgeRating, GetAllImagesRequest } from '@/models/request/image';
+import { GetAllImagesRequest, GetImageRequest } from '@/models/request/image';
 import { useGlobalState } from '@/utilities/store';
 import FileSaver from 'file-saver';
 import classNames from 'classnames';
@@ -20,6 +20,9 @@ import Link from 'next/link';
 import Chip from '@/components/common/chip/Chip';
 import DeleteImage from '../delete-image/DeleteImage';
 import { QUERY_KEYS } from '@/constants/query-key';
+import { AgeRating } from '@/constants/image';
+import { API_DETAIL } from '@/configuration/api';
+import HTTPMethod from 'http-method-enum';
 
 interface HomeMasonryCardState {
   open: boolean,
@@ -37,24 +40,22 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
   const [rating, setRating] = useState<AgeRating>(AgeRating.GENERAL);
   const param = useSearchParams();
 
-  useEffect(() => {
-    setSearchBar(param.get('query') ?? "");
-  }, [param, setSearchBar]);
+  useEffect(() => { setSearchBar(param.get('query') ?? ""); }, [param, setSearchBar]);
 
   const { data, fetchNextPage, status, hasNextPage } = useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_IMAGES, searchBar, rating],
     initialPageParam: 1,
     getNextPageParam: (response) => response.isLast ? undefined : response.currentPage + 1,
     queryFn: async ({ pageParam }: { pageParam: number }) => {
-      let response = await HTTPRequestClient<PaginationResponse<GetImageResponse[]>, GetAllImagesRequest>({
-        url: API_ROUTE.IMAGE,
-        method: "GET",
+      let response = await HTTPRequestClient<PaginationResponse<NewGetImageResponse[]>, GetImageRequest>({
+        url: API_DETAIL.IMAGE.route,
+        method: HTTPMethod.GET,
         data: {
-          TagAND: searchBar === "" ? undefined : searchBar.split(" ").some(x => !x.startsWith('+')) ? searchBar.split(" ").filter(x => !x.startsWith('+')) : undefined,
-          TagOR: searchBar === "" ? undefined : searchBar.split(" ").some(x => x.startsWith('+')) ? searchBar.split(" ").filter(x => x.startsWith('+')).map(x => x.replace('+', '')) : undefined,
-          PageSize: 10,
-          CurrentPage: pageParam,
-          AgeRating: rating
+          tagAND: searchBar === "" ? [] : searchBar.split(" ").some(x => !x.startsWith('+')) ? searchBar.split(" ").filter(x => !x.startsWith('+')) : [],
+          tagOR: searchBar === "" ? [] : searchBar.split(" ").some(x => x.startsWith('+')) ? searchBar.split(" ").filter(x => x.startsWith('+')).map(x => x.replace('+', '')) : [],
+          pageSize: 10,
+          currentPage: pageParam,
+          ageRating: rating
         }
       });
       return response.data;
@@ -110,15 +111,15 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
   )
 }
 
-function HomeMasonryCard({ data, isLogin }: { data: GetImageResponse, isLogin: boolean }) {
+function HomeMasonryCard({ data, isLogin }: { data: NewGetImageResponse, isLogin: boolean }) {
   const [state, setState] = useState<HomeMasonryCardState>({
     open: false,
     saving: false,
-    blur: AgeRating[data.ageRating] === AgeRating.EXPLICIT
+    blur: data.ageRating === AgeRating.EXPLICIT
   });
 
   function handleOnClickExplicit() {
-    if (AgeRating[data.ageRating] === AgeRating.EXPLICIT) setState({...state, blur: !state.blur})
+    if (data.ageRating === AgeRating.EXPLICIT) setState({...state, blur: !state.blur})
   }
 
   function handleOnSteal() {
@@ -152,15 +153,15 @@ function HomeMasonryCard({ data, isLogin }: { data: GetImageResponse, isLogin: b
   return (
     <animated.div style={springs}>
       <div className={classNames('flex flex-col bg-[#2370d3]/25 p-2 rounded-md', {
-        'bg-[#2370d3]/25': AgeRating[data.ageRating] === AgeRating.GENERAL,
-        'bg-[#d3c423]/40': AgeRating[data.ageRating] === AgeRating.MATURE,
-        'bg-[#a80f0f]/70': AgeRating[data.ageRating] === AgeRating.EXPLICIT,
+        'bg-[#2370d3]/25': data.ageRating === AgeRating.GENERAL,
+        'bg-[#d3c423]/40': data.ageRating === AgeRating.MATURE,
+        'bg-[#a80f0f]/70': data.ageRating === AgeRating.EXPLICIT,
       })}>
         <div className='mb-2 overflow-hidden' onClick={handleOnClickExplicit}>
           <Image src={data.image} alt={data.name} width={0} height={0} sizes='100vw'
             className={classNames('w-[300px] h-auto rounded-md', {
               'blur-xl': state.blur,
-              'cursor-pointer': AgeRating[data.ageRating] === AgeRating.EXPLICIT
+              'cursor-pointer': data.ageRating === AgeRating.EXPLICIT
             })} />
         </div>
         <div className='h-full flex flex-col gap-1'>

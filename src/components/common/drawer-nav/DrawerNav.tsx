@@ -1,6 +1,6 @@
 'use client'
 
-import { Logout } from '@/app/(common)/action';
+import { Logout } from '@/app/(web)/(common)/action';
 import { Route, ROUTES } from '@/constants/routes';
 import { Button, Drawer, Sidebar } from 'flowbite-react'
 import Link from 'next/link'
@@ -13,7 +13,7 @@ export default function DrawerNav() {
   const renderSidebarOptions = (route: Route) => {
     if (route.type === 'single') return (
       <Sidebar.Item key={route.name} as={Link} href={route.action} onClick={closeDrawer} icon={route.icon}>{route.name}</Sidebar.Item>
-    )    
+    )
     else return (
       <Sidebar.Collapse key={route.name} label={route.name} icon={route.icon as React.FunctionComponent<React.SVGProps<SVGSVGElement>>}>
         {route.action.map(r => renderSidebarOptions(r))}

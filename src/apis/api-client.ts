@@ -5,6 +5,7 @@ import { BaseRequest } from "@/models/request/base";
 import { BaseResponse } from "@/models/response/base";
 import { toFormData } from "@/utilities/form";
 import { supabaseClient } from "@/utilities/supabase-client";
+import HTTPMethod from "http-method-enum";
 import { isNil, omitBy } from "lodash";
 
 /**
@@ -21,13 +22,14 @@ export async function HTTPRequestClient<TResponse, TRequest extends Record<strin
   // Kita pecah prosesnya biar GET dan DELETE punya proses sendiri biar nga mabuk
 
   let url = request.url;
-  if (request.method === "GET" || request.method === "DELETE") {
+  if (request.method === HTTPMethod.GET || request.method === HTTPMethod.DELETE) {
     let arrayParams = Object.entries(omitBy(request.data ?? {}, isNil))
       .flatMap(([k, v]) => {
         if (Array.isArray(v)) return v.map(x => ([k, x]));
         else return [[k, v]]
       });
-    url = url + "?" + new URLSearchParams(arrayParams);
+    
+    if (arrayParams.length > 0) url = url + "?" + new URLSearchParams(arrayParams);
   }
 
   let conf: RequestInit = {
@@ -38,7 +40,7 @@ export async function HTTPRequestClient<TResponse, TRequest extends Record<strin
   }
 
   // Jika kita kirim data pakai form, maka kita masukkan ke formData
-  if (request.method !== "GET" && request.method !== "DELETE"){
+  if (request.method !== HTTPMethod.GET && request.method !== HTTPMethod.DELETE){
     if (useForm && request.data) conf.body = toFormData(request.data!);
     else conf.body = JSON.stringify(omitBy(request.data ?? {}, isNil));
   }

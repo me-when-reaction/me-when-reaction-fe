@@ -4,17 +4,19 @@ import { Button, FileInput, Label, Select, Textarea, TextInput } from 'flowbite-
 import { produce } from 'immer';
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
-import * as yup from 'yup'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { HTTPRequestClient } from '@/apis/api-client';
-import { API_ROUTE } from '@/apis/api-routes';
 import { useRouter } from 'next/navigation';
 import { useGlobalState } from '@/utilities/store';
 import { QUERY_KEYS } from '@/constants/query-key';
 import ErrorHelperText from '@/components/common/error-helper/ErrorHelperText';
 import TagInput from '@/components/common/tag-input/TagInput';
+import { InsertImageRequest, InsertImageRequestSchema } from '@/models/request/image';
+import HTTPMethod from 'http-method-enum';
+import { API_DETAIL } from '@/configuration/api';
+import SingleFileInput from '@/components/common/single-file-input/SingleFileInput';
 
 interface InsertImageState {
   imagePreview: string,
@@ -27,37 +29,8 @@ enum AgeRating {
   EXPLICIT
 }
 
-interface InsertImageForm {
-  tags: string[],
-  image: FileList | File,
-  name: string,
-  description: string,
-  source: string,
-  ageRating: AgeRating
-}
-
-const insertImageSchema = yup.object<InsertImageForm>().shape({
-  image: yup.mixed<FileList>()
-    .required("File is required")
-    .test('image', 'Image is required, duh', (v) => {
-      return !!v &&
-        !!v[0] &&
-        ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'].includes(v[0].type ?? '')
-    })
-    .test('fileSize', 'File too large. Must be 20KB or smaller', (value) => {
-      return value && value[0] && value[0].size <= 1024 * 20
-    }),
-  name: yup.string().required('Please gimme name 🥺'),
-  description: yup.string().required('Context please'),
-  tags: yup.array().of(yup.string().required())
-    .required()
-    .min(2, e => `Must be more than ${e.min} tags`),
-  source: yup.string().required("Respect the creator, please :("),
-  ageRating: yup.number().required().oneOf([AgeRating.GENERAL, AgeRating.MATURE, AgeRating.EXPLICIT])
-});
-
 export default function InsertImage() {
-  const { register, handleSubmit, formState, control, trigger } = useForm<InsertImageForm>({ resolver: yupResolver<InsertImageForm>(insertImageSchema), mode: 'onChange' });
+  const { register, handleSubmit, formState, control, trigger } = useForm<InsertImageRequest>({ resolver: zodResolver(InsertImageRequestSchema), mode: 'onChange' });
   const router = useRouter();
   const [state, setState] = useState<InsertImageState>({
     imagePreview: "",
@@ -66,11 +39,11 @@ export default function InsertImage() {
   const [setAlert, queryClient] = useGlobalState(s => [s.alert.setAlert, s.query.queryClient]);
 
   const mutation = useMutation({
-    mutationFn: async (data: InsertImageForm) => {
+    mutationFn: async (data: InsertImageRequest) => {
       await HTTPRequestClient({
-        url: API_ROUTE.IMAGE,
-        method: 'POST',
-        data: { ...data, image: (data.image as FileList)[0] }
+        url: API_DETAIL.IMAGE.route,
+        method: HTTPMethod.POST,
+        data: data
       });
     },
     onSuccess: () => {
@@ -88,8 +61,7 @@ export default function InsertImage() {
     trigger();
   }, [trigger]);
 
-  function handleOnInsertImage(e: React.ChangeEvent<HTMLInputElement>) {
-    let file = e.target.files?.item(0);
+  function handleOnInsertImage(file?: File) {
     if (!file || !['image/jpg', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type ?? '')) {
       setState(produce(state, draft => {
         draft.imagePreview = ""
@@ -101,7 +73,7 @@ export default function InsertImage() {
     }));
   }
 
-  const onSubmits: SubmitHandler<InsertImageForm> = (data, e) => {
+  const onSubmits: SubmitHandler<InsertImageRequest> = (data, e) => {
     e?.preventDefault();
     mutation.mutate(data);
   }
@@ -117,9 +89,15 @@ export default function InsertImage() {
         }
         <div>
           <Label htmlFor='image' value='Image' className='font' />
-          <FileInput id='image' accept='image/*' {...register('image', {
-            onChange: handleOnInsertImage
-          })} color={formState.errors.image && 'failure'} />
+          <Controller
+            defaultValue={undefined}
+            name='image'
+            control={control}
+            render={({ field }) => (<SingleFileInput color={formState.errors.image && 'failure'} onChange={f => {
+              handleOnInsertImage(f);
+              field.onChange(f);
+            }}/>)}
+          />
           <ErrorHelperText message={formState.errors.image?.message} />
         </div>
         <div>

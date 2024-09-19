@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useRef } from 'react'
-import { login } from '../../../app/login/action';
+import { login } from '../../../app/(web)/login/action';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Alert, Button, TextInput } from 'flowbite-react';
 import * as yup from 'yup';

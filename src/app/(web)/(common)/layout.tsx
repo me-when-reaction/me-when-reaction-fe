@@ -1,6 +1,6 @@
 import NavBar from '@/components/common/navbar/NavBar';
+import QueryWrapper from '@/components/common/query-wrapper/query-client-component';
 import React from 'react'
-import QueryWrapper from '../../components/common/query-wrapper/query-client-component';
 
 export default async function PageLayout({ children }: { children: React.ReactNode }) {
   return (

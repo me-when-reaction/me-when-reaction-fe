@@ -56,12 +56,14 @@ export default function TagInput(props: TagInputProps) {
   }
 
   return (
-    <div className='flex w-full items-center rounded-md border bg-gray-200 px-3 text-sm text-white dark:border-gray-600 dark:bg-gray-700 border-cyan-500 placeholder-cyan-700 focus-within:border-cyan-500 focus-within:ring-cyan-500 dark:focus-within:border-cyan-500 dark:focus-within:ring-cyan-500'>
+    <div className={classNames('flex w-full items-center rounded-md border bg-gray-200 px-3 text-sm text-white dark:border-gray-600 dark:bg-gray-700 border-cyan-500 placeholder-cyan-700 focus-within:border-cyan-500 focus-within:ring-cyan-500 dark:focus-within:border-cyan-500 dark:focus-within:ring-cyan-500', {
+      'border-red-500 bg-red-50 dark:text-red-900 dark:placeholder-red-700 dark:border-red-400 dark:bg-red-100 dark:focus-within:border-red-500 dark:focus-within:ring-red-500': props.color === 'failure'
+    })}>
     <Combobox multiple value={tag}>
       <div className='flex gap-2 w-full p-1 overflow-x-scroll scrollbar-none'>
         {
           tag.map(q => (
-            <TagInputChip key={q} label={q} onClick={() => handleOnRemoveTag(q)}/>
+            <TagInputChip key={q} label={q} onClick={() => handleOnRemoveTag(q)} color={props.color}/>
           ))
         }
         <ComboboxInput
@@ -73,51 +75,20 @@ export default function TagInput(props: TagInputProps) {
     </Combobox>
   </div>
   )
-
-  // return (
-  //   <div className={classNames(
-  //     'bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white',
-  //     'inline-flex gap-2 h-auto flex-wrap w-full',
-  //     {'border-gray-300 dark:border-gray-600' : !focus},
-  //     {'ring-cyan-500 border-cyan-500 dark:ring-cyan-500 dark:border-cyan-500' : focus},
-  //     {'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500 dark:border-red-400 dark:bg-red-100 dark:focus:border-red-500 dark:focus:ring-red-500': props.color === 'failure'}
-  //   )}>
-  //     {/* Naruh tag */}
-  //     {
-  //       tag.map(x => 
-  //         <div className='bg-slate-600 p-1 text-sm rounded-sm flex' key={x}>
-  //           <span className='whitespace-nowrap'>{x}</span>
-  //           <div className='w-full h-full flex justify-center items-center cursor-pointer hover:text-white/50' onClick={_ => handleOnRemoveTag(x)}><BsX className='text-xl'/></div>
-  //         </div>
-  //       )
-  //     }
-
-  //     {/* Naruh textfield */}
-  //     <input type="text"
-  //       className={classNames(
-  //         'border-none focus:border-none focus:outline-none rounded-none focus:ring-0 outline-none text-sm block bg-transparent float-none p-1 flex-grow',
-  //         { 'dark:placeholder-gray-400 dark:text-white text-gray-900' : props.color !== 'failure' },
-  //         {'placeholder-red-700 text-red-900 dark:placeholder-red-700 dark:text-red-900 dark:caret-black': props.color === 'failure'}
-  //       )}
-  //       onFocus={_ => {setFocus(true)}}
-  //       onBlur={_ => {setFocus(false)}}
-  //       onPaste={handleOnPasteTag}
-  //       onKeyDown={handleOnKeyDown}
-  //       placeholder='Use enter key to add tag. You can also paste space-separated tags'
-  //     />
-  //   </div>
-  // ) as ReactElement
 }
 
 interface TagInputChipProps {
   label: string,
+  color?: 'info' | 'failure'
   onClick: () => void
 }
 
 function TagInputChip(props : TagInputChipProps) {
   return (
-    <div className='bg-slate-600 p-1 text-sm rounded-sm flex'>
-      <span className='whitespace-nowrap'>{props.label}</span>
+    <div className={classNames('bg-slate-600 p-1 text-sm rounded-sm flex', {
+      'dark:text-red-900 dark:bg-red-400': props.color === 'failure'
+    })}>
+      <span className={classNames('whitespace-nowrap')}>{props.label}</span>
       <div className='w-full h-full flex justify-center items-center cursor-pointer hover:text-white/50' onClick={_ => props.onClick()}><BsX className='text-xl'/></div>
     </div>
   )

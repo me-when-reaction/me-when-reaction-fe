@@ -3,8 +3,8 @@
 import React from 'react'
 import { supabaseServer } from '@/utilities/supabase-server';
 import { redirect } from 'next/navigation';
-import LoginFormPage from '../../components/app/login/LoginForm';
 import { Metadata } from 'next';
+import LoginFormPage from '@/components/app/login/LoginForm';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
