@@ -9,13 +9,10 @@ export interface ChipProps {
 
 export default function Chip(props: ChipProps) {
 
-  const [text, setText, setQuery] = useGlobalState(x => [x.search.text, x.search.setText, x.search.setQuery]);
+  const appendQuery = useGlobalState(x => x.newSearch.appendQuery);
 
-  function handleOnClick() {
-    let s = text.split(' ');
-    s.push(props.text);
-    s = s.filter((v, idx, arr) => v.length > 0 && arr.indexOf(v) === idx);
-    setText(s.join(' '));
+  function handleOnClick() { 
+    appendQuery(props.text);
   }
 
   return (

@@ -4,10 +4,9 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { API_ROUTE } from '@/apis/api-routes';
-import { GetImageResponse, NewGetImageResponse } from '@/models/response/image';
+import { NewGetImageResponse } from '@/models/response/image';
 import { HTTPRequestClient } from '@/apis/api-client';
-import { GetAllImagesRequest, GetImageRequest } from '@/models/request/image';
+import { GetImageRequest } from '@/models/request/image';
 import { useGlobalState } from '@/utilities/store';
 import FileSaver from 'file-saver';
 import classNames from 'classnames';
@@ -20,7 +19,7 @@ import Link from 'next/link';
 import Chip from '@/components/common/chip/Chip';
 import DeleteImage from '../delete-image/DeleteImage';
 import { QUERY_KEYS } from '@/constants/query-key';
-import { AgeRating } from '@/constants/image';
+import { AgeRating, PAGE_SIZES } from '@/constants/image';
 import { API_DETAIL } from '@/configuration/api';
 import HTTPMethod from 'http-method-enum';
 
@@ -34,16 +33,23 @@ export interface HomeMasonryCardProps {
   isLogin: boolean
 }
 
+interface HomeMasonryState {
+  rating: AgeRating;
+  pageSize: number
+}
 
 export default function HomeMasonry(props: HomeMasonryCardProps) {
-  const [searchBar, setSearchBar] = useGlobalState(x => [x.search.query, x.search.setQuery, x.alert.setAlert]);
-  const [rating, setRating] = useState<AgeRating>(AgeRating.GENERAL);
+  const finalQuery = useGlobalState(x => x.newSearch.finalQuery);
+  const [state, setState] = useState<HomeMasonryState>({
+    pageSize: 10,
+    rating: AgeRating.GENERAL
+  })
   const param = useSearchParams();
 
-  useEffect(() => { setSearchBar(param.get('query') ?? ""); }, [param, setSearchBar]);
+  // useEffect(() => { setSearchBar(param.get('query') ?? ""); }, [param, setSearchBar]);
 
   const { data, fetchNextPage, status, hasNextPage } = useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_IMAGES, searchBar, rating],
+    queryKey: [QUERY_KEYS.GET_IMAGES, finalQuery, state],
     initialPageParam: 1,
     getNextPageParam: (response) => response.isLast ? undefined : response.currentPage + 1,
     queryFn: async ({ pageParam }: { pageParam: number }) => {
@@ -51,11 +57,11 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
         url: API_DETAIL.IMAGE.route,
         method: HTTPMethod.GET,
         data: {
-          tagAND: searchBar === "" ? [] : searchBar.split(" ").some(x => !x.startsWith('+')) ? searchBar.split(" ").filter(x => !x.startsWith('+')) : [],
-          tagOR: searchBar === "" ? [] : searchBar.split(" ").some(x => x.startsWith('+')) ? searchBar.split(" ").filter(x => x.startsWith('+')).map(x => x.replace('+', '')) : [],
-          pageSize: 10,
+          tagAND: finalQuery[0],
+          tagOR: finalQuery[1],
+          pageSize: state.pageSize,
           currentPage: pageParam,
-          ageRating: rating
+          ageRating: state.rating
         }
       });
       return response.data;
@@ -64,6 +70,7 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
 
   if (status === 'pending') return (
     <div className="px-10 text-center">
+      
       <p>Please wait...</p>
     </div>
   )
@@ -96,10 +103,18 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
     <div className='px-10'>
       <div className='flex items-center justify-end gap-3 mb-5'>
         <div>&nbsp;</div>
-        <Label className='text-sm' htmlFor='ageRating'>Age Rating</Label>
-        <Select id='ageRating' className='text-sm' value={rating} onChange={e => setRating(parseInt(e.target.value))}>
-          {Object.keys(AgeRating).filter(k => !isNaN(Number(k))).map(k => (<option value={k} key={k}>{AgeRating[k as keyof typeof AgeRating]}</option>))}
-        </Select>
+        <div>
+          <Label className='text-sm' htmlFor='ageRating'>Page Size</Label>
+          <Select id='ageRating' className='text-sm' value={state.pageSize} onChange={e => setState({ ...state, pageSize: parseInt(e.target.value) })}>
+            {PAGE_SIZES.map(k => (<option value={k} key={k}>{k}</option>))}
+          </Select>
+        </div>
+        <div>
+          <Label className='text-sm' htmlFor='ageRating'>Age Rating</Label>
+          <Select id='ageRating' className='text-sm' value={state.rating} onChange={e => setState({ ...state, rating: parseInt(e.target.value) })}>
+            {Object.keys(AgeRating).filter(k => !isNaN(Number(k))).map(k => (<option value={k} key={k}>{AgeRating[k as keyof typeof AgeRating]}</option>))}
+          </Select>
+        </div>
       </div>
       {masonries}
       {hasNextPage &&

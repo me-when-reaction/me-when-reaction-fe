@@ -4,9 +4,10 @@ import { trImage, trImageTag, trTag } from "@/database/schema";
 import { DeleteImageRequestSchema, GetImageRequestSchema, InsertImageRequestSchema, UpdateImageRequestSchema } from "@/models/request/image";
 import { NewGetImageResponse } from "@/models/response/image";
 import { badRequestResponse, handleDataValidation, paginationResponse, successResponse, unauthorizedResponse } from "@/utilities/api";
+import { sqlArray } from "@/utilities/database";
 import { deleteImage, getStoragePath, uploadImage } from "@/utilities/storage";
 import { supabaseServer } from "@/utilities/supabase-server";
-import { and, desc, eq, inArray, InferInsertModel, lte, not, or } from "drizzle-orm";
+import { and, count, desc, eq, inArray, InferInsertModel, lte, not, sql } from "drizzle-orm";
 import _ from "lodash";
 import { NextRequest } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
@@ -14,10 +15,29 @@ import { v4 as uuidv4 } from 'uuid';
 export async function GET(request: NextRequest) {
   return await handleDataValidation(request, GetImageRequestSchema, async (data) => {
     const storagePath = await getStoragePath();
-    
-    const totalTag = data.tagAND.length + data.tagOR.length;
-    const concatTag = _.union(data.tagAND, data.tagOR);
-    // Cari dulu gambar yang punya tag di kedua tag2 ini
+
+    // 1. Cari ImageID yang eligible
+    const eligibleImageID = await DB.select({
+      imageId: trImageTag.imageId
+    })
+      .from(trImageTag)
+      .innerJoin(trTag, eq(trImageTag.tagId, trTag.id))
+      .groupBy(trImageTag.imageId)
+      .having(
+        sql`(${data.tagAND.length} = 0 OR ARRAY_AGG(${trTag.name}) @> ${sqlArray(data.tagAND)}) AND (${data.tagOR.length} = 0 OR ARRAY_AGG(${trTag.name}) && ${sqlArray(data.tagOR)})`
+    );
+
+    // 2. Hitung data
+    const dataCount = (await DB.select({
+      count: count()
+    }).from(trImage)
+      .where(and(
+        lte(trImage.ageRating, data.ageRating ?? AgeRating.GENERAL),
+        inArray(trImage.id, eligibleImageID.map(x => x.imageId))
+      )))[0].count;
+    const totalPage = Math.floor((dataCount + data.pageSize - 1) / data.pageSize);
+
+    // 3. Ambil gambar yang ID nya di eligible tsb
     const res = await DB.query.trImage.findMany({
       columns: {
         id: true,
@@ -40,11 +60,14 @@ export async function GET(request: NextRequest) {
       },
       where: and(
         lte(trImage.ageRating, data.ageRating ?? AgeRating.GENERAL),
-        totalTag === 0 ? undefined : inArray(trTag.name, concatTag)
+        inArray(trImage.id, eligibleImageID.map(x => x.imageId))
       ),
-      orderBy: [desc(trImage.dateIn)]
+      orderBy: [desc(trImage.dateIn)],
+      limit: data.pageSize,
+      offset: data.pageSize * (data.currentPage - 1)
     });
 
+    // 4. Datanya diolah
     let preliminaryResult = res.map<NewGetImageResponse>(d => ({
       id: d.id,
       name: d.name,
@@ -55,15 +78,6 @@ export async function GET(request: NextRequest) {
       uploadDate: d.dateIn,
       description: d.description
     }));
-    const totalPage = Math.floor((preliminaryResult.length + data.pageSize - 1) / data.pageSize);
-
-
-    if (totalTag === 0) {
-      preliminaryResult = preliminaryResult.filter(x => (
-        (data.tagAND.length === 0 || data.tagAND.every(and => x.tags.includes(and))) &&
-        (data.tagOR.length === 0 || data.tagOR.some(or => x.tags.includes(or)))
-      ))
-    }
 
     return paginationResponse({
       currentPage: data.currentPage,

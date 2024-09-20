@@ -1,20 +1,23 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import { Combobox, ComboboxInput } from '@headlessui/react'
 import { BsX } from 'react-icons/bs'
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
 import { useGlobalState } from '@/utilities/store';
-import { produce } from 'immer';
 import { Key } from 'ts-key-enum';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function NavbarInputNew() {
-  const [text, setText] = useState("");
-  const [query, appendQuery, popQuery, removeQuery, queryClient] = useGlobalState(s => [s.newSearch.query, s.newSearch.appendQuery, s.newSearch.popQuery, s.newSearch.removeQuery, s.query.queryClient]);
+  const [query, appendQuery, popQuery, removeQuery, finalizeQuery] = useGlobalState(s => [s.newSearch.query, s.newSearch.appendQuery, s.newSearch.popQuery, s.newSearch.removeQuery, s.newSearch.finalizeQuery]);
+  const router = useRouter();
+  const pathName = usePathname();
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === Key.Enter || e.key === " ") && e.currentTarget.value.length > 0) {
+    if (e.key === Key.Enter && e.currentTarget.value.length === 0) {
+      finalizeQuery();
+      if (pathName !== '/') router.push('/');
+    }
+    else if ((e.key === Key.Enter || e.key === " ") && e.currentTarget.value.length > 0) {
       e.preventDefault();
       appendQuery(e.currentTarget.value.trim().toLowerCase());
       e.currentTarget.value = "";

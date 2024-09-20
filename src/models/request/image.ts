@@ -3,15 +3,6 @@ import { zfd } from "zod-form-data";
 import { PaginationRequestSchema } from "./base";
 import { AgeRating, MAX_SIZE } from "@/constants/image";
 
-/** @deprecated Move to native API */
-export type GetAllImagesRequest = {
-  TagAND?: string[],
-  TagOR?: string[],
-  AgeRating?: AgeRating,
-  PageSize: number,
-  CurrentPage: number,
-}
-
 export const GetImageRequestSchema = z.object({
   tagAND: zfd.repeatable(z.string().array().default([])),
   tagOR: zfd.repeatable(z.string().array().default([])),

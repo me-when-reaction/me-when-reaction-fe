@@ -40,6 +40,8 @@ export interface SearchState {
 
 export interface NewSearchState {
   query: string[];
+  finalQuery: [tagAND: string[], tagOR: string[]];
+  finalizeQuery: () => void;
   appendQuery: (input: string) => void,
   removeQuery: (input: string) => void,
   popQuery: () => void
@@ -68,6 +70,7 @@ export const useGlobalState = create<GlobalState>()(
       },
       newSearch: {
         query: [],
+        finalQuery: [[], []],
         appendQuery: (input) => set(produce<GlobalState>((d) => {
           if (d.newSearch.query.indexOf(input) === -1) d.newSearch.query.push(input);
         })),
@@ -77,6 +80,9 @@ export const useGlobalState = create<GlobalState>()(
         popQuery: () => set(produce<GlobalState>((d) => {
           d.newSearch.query.pop();
         })),
+        finalizeQuery: () => set(produce<GlobalState>(d => {
+          d.newSearch.finalQuery = [d.newSearch.query.filter(x => !x.startsWith("+")), d.newSearch.query.filter(x => x.startsWith("+")).map(x => x.slice(1))];
+        }))
       },
       alert: {
         text: "",

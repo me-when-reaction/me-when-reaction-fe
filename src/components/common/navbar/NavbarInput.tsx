@@ -14,6 +14,8 @@ import { GetTagSuggestionResponse } from '@/models/response/tag'
 import { useOutsideClick } from '@/hooks/hooks'
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { useQuery } from '@tanstack/react-query'
+import HTTPMethod from 'http-method-enum'
+import { API_DETAIL } from '@/configuration/api'
 
 const TEXT: string[] = [
   "auto",
@@ -52,8 +54,8 @@ export default function NavbarInputClient() {
     queryKey: [suggest.input],
     queryFn: async () => {
       let res = await HTTPRequestClient<GetTagSuggestionResponse[], { query: string }>({
-        method: "GET",
-        url: `${API_ROUTE.TAG}/search`,
+        method: HTTPMethod.GET,
+        url: API_DETAIL.TAG_SEARCH.route,
         data: {
           query: suggest.input
         }
