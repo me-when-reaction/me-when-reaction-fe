@@ -17,6 +17,7 @@ import { InsertImageRequest, InsertImageRequestSchema } from '@/models/request/i
 import HTTPMethod from 'http-method-enum';
 import { API_DETAIL } from '@/configuration/api';
 import SingleFileInput from '@/components/common/single-file-input/SingleFileInput';
+import ImageResizer from './ImageResizer';
 
 interface InsertImageState {
   imagePreview: string,
@@ -82,7 +83,8 @@ export default function InsertImage() {
     <div className='w-full h-full flex justify-center items-center'>
       <form className='p-12 bg-slate-700 flex flex-col gap-4 w-full' onSubmit={handleSubmit(onSubmits)} encType='multipart/form-data'>
         <h1 className='text-2xl font-bold'>Insert Image</h1>
-        {(state.imagePreview && state.imagePreview.length > 0) &&
+        <ImageResizer onChange={() => {}}/>
+        {/* {(state.imagePreview && state.imagePreview.length > 0) &&
           <div className='p-1 text-center flex justify-center border-2 border-slate-500/30 bg-slate-800/50'>
             <Image src={state.imagePreview} width="0" height="0" sizes='100%' className='w-auto h-auto max-h-[300px]' alt="" />
           </div>
@@ -99,7 +101,7 @@ export default function InsertImage() {
             }}/>)}
           />
           <ErrorHelperText message={formState.errors.image?.message} />
-        </div>
+        </div> */}
         <div>
           <Label htmlFor='name' value='Image Name' />
           <TextInput id='name' {...register('name')} placeholder='Give a meaningful name' color={formState.errors.name && 'failure'} />
