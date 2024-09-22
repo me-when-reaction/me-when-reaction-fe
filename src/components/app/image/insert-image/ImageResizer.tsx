@@ -5,8 +5,8 @@ import { Button, Label, RangeSlider, TextInput } from 'flowbite-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import imageCompression from 'browser-image-compression';
-import { readAndCompressImage } from 'browser-image-resizer';
-import {imageDimensionsFromStream} from 'image-dimensions';
+import { imageDimensionsFromStream } from 'image-dimensions';
+import {compress, compressAccurately, EImageType} from 'image-conversion';
 
 
 interface ImageResizerProps {
@@ -33,41 +33,20 @@ export default function ImageResizer(props: ImageResizerProps) {
     if (!!state?.rawFile) {
       setDisabled(true);
 
-      imageDimensionsFromStream(state.rawFile.stream()).then(resolution => {
-        if (!resolution || !state?.rawFile || maxSizeKB > 10) return;
-        const maxF = resolution.width > resolution.height ? resolution.width : resolution.height;
-        imageCompression(state.rawFile, {
-          maxSizeMB: 0.0001,
-          fileType: state.rawFile.type === "image/png" ? "image/jpeg" : state.rawFile.type,
-          maxWidthOrHeight: resolution.width * maxRatio / 100,
-          maxIteration: maxIteration,
-          // alwaysKeepResolution: true,
-        }).then(newFile => {
-          const nf = new File([newFile], `revised-${state.rawFile?.name}`);
-          setState({
-            ...state,
-            editedFile: nf,
-            editedPreviewFile: URL.createObjectURL(newFile)
-          });
-          console.log(`Old: ${state.rawFile?.size ?? 0} || New: ${nf.size}`)
-          setDisabled(false);
+      compressAccurately(state.rawFile, {
+        size: maxSizeKB,
+        type: EImageType.JPEG,
+        scale: maxRatio / 100
+      }).then(newFile => {
+        const nf = new File([newFile], `revised-${state.rawFile?.name}`);
+        setState({
+          ...state,
+          editedFile: nf,
+          editedPreviewFile: URL.createObjectURL(newFile)
         });
-        // readAndCompressImage(state.rawFile, {
-        //   maxWidth: resolution.width * maxRatio / 100,
-        //   maxHeight: resolution.height * maxRatio / 100,
-        // }).then(resizedFile => {
-        //   imageCompression(new File([resizedFile], `revised1-${state.rawFile?.name}`), {
-        //     maxSizeMB: maxSizeKB / 1024,
-        //     alwaysKeepResolution: true,
-        //   }).then(newFile => {
-        //     setState({
-        //       ...state,
-        //       editedFile: new File([newFile], `revised-${state.rawFile?.name}`),
-        //       editedPreviewFile: URL.createObjectURL(newFile)
-        //     });
-        //     setDisabled(false);
-        //   });
-        // });
+        console.log(`Old: ${state.rawFile?.size ?? 0} || New: ${nf.size}`);
+        console.log(nf);
+        setDisabled(false);
       });
     }
   }
@@ -83,10 +62,6 @@ export default function ImageResizer(props: ImageResizerProps) {
         previewFile: URL.createObjectURL(file)
       });
     }
-    // else setState({
-    //   rawFile: file,
-    //   previewFile: URL.createObjectURL(file)
-    // });
   }
 
   return (
@@ -123,6 +98,9 @@ export default function ImageResizer(props: ImageResizerProps) {
           <div>
             <Label className='text-sm'>Max Size in KB</Label>
             <TextInput type='number' step=".01" sizing='sm' value={maxSizeKB} onChange={e => setMaxSizeKB(e.currentTarget.valueAsNumber)}/>
+          </div>
+          <div>
+            <span className='text-red-600 text-xs'>All conversions will result in .jpg file</span>
           </div>
           <div>
             <Button className='w-full'
