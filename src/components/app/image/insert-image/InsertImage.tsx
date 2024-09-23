@@ -63,14 +63,8 @@ export default function InsertImage() {
   }, [trigger]);
 
   function handleOnInsertImage(file?: File) {
-    if (!file || !['image/jpg', 'image/jpeg', 'image/png', 'image/webp'].includes(file.type ?? '')) {
-      setState(produce(state, draft => {
-        draft.imagePreview = ""
-      }));
-      return;
-    }
     setState(produce(state, draft => {
-      draft.imagePreview = URL.createObjectURL(file)
+      draft.imagePreview = URL.createObjectURL(file);
     }));
   }
 
@@ -83,7 +77,19 @@ export default function InsertImage() {
     <div className='w-full h-full flex justify-center items-center'>
       <form className='p-12 bg-slate-700 flex flex-col gap-4 w-full' onSubmit={handleSubmit(onSubmits)} encType='multipart/form-data'>
         <h1 className='text-2xl font-bold'>Insert Image</h1>
-        <ImageResizer onChange={() => {}}/>
+        <div>
+          <Controller
+            defaultValue={undefined}
+            name='image'
+            control={control}
+            render={({ field }) => (<ImageResizer onChange={f => {
+              handleOnInsertImage(f)
+              field.onChange(f);
+            }}/>)}
+          />
+          <ImageResizer onChange={() => {}}/>
+          <ErrorHelperText message={formState.errors.image?.message} />
+        </div>
         {/* {(state.imagePreview && state.imagePreview.length > 0) &&
           <div className='p-1 text-center flex justify-center border-2 border-slate-500/30 bg-slate-800/50'>
             <Image src={state.imagePreview} width="0" height="0" sizes='100%' className='w-auto h-auto max-h-[300px]' alt="" />
