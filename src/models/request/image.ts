@@ -12,7 +12,7 @@ export type GetImageRequest = z.infer<typeof GetImageRequestSchema>
 
 export const GetImageByIDRequestSchema = z.object({
   id: z.string().uuid({ message: "Invalid ID" })
-}).merge(GetImageRequestSchema);
+});
 export type GetImageByIDRequest = z.infer<typeof GetImageByIDRequestSchema>
 
 export const InsertImageRequestSchema = z.object({

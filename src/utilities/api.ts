@@ -64,6 +64,7 @@ export async function handleDataValidation<TSchema extends z.ZodTypeAny>(
       })
     }
     else {
+      console.log(e);
       return serverErrorResponse();
     }
   }

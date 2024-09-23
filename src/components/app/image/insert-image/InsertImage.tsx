@@ -1,8 +1,7 @@
 'use client'
 
-import { Button, FileInput, Label, Select, Textarea, TextInput } from 'flowbite-react'
+import { Button, Label, Select, Textarea, TextInput } from 'flowbite-react'
 import { produce } from 'immer';
-import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,7 +15,6 @@ import TagInput from '@/components/common/tag-input/TagInput';
 import { InsertImageRequest, InsertImageRequestSchema } from '@/models/request/image';
 import HTTPMethod from 'http-method-enum';
 import { API_DETAIL } from '@/configuration/api';
-import SingleFileInput from '@/components/common/single-file-input/SingleFileInput';
 import ImageResizer from './ImageResizer';
 
 interface InsertImageState {
@@ -64,7 +62,7 @@ export default function InsertImage() {
 
   function handleOnInsertImage(file?: File) {
     setState(produce(state, draft => {
-      draft.imagePreview = URL.createObjectURL(file);
+      draft.imagePreview = file ? URL.createObjectURL(file) : "";
     }));
   }
 
@@ -79,35 +77,16 @@ export default function InsertImage() {
         <h1 className='text-2xl font-bold'>Insert Image</h1>
         <div>
           <Controller
-            defaultValue={undefined}
             name='image'
             control={control}
-            render={({ field }) => (<ImageResizer onChange={f => {
-              handleOnInsertImage(f)
-              field.onChange(f);
-            }}/>)}
-          />
-          <ImageResizer onChange={() => {}}/>
-          <ErrorHelperText message={formState.errors.image?.message} />
-        </div>
-        {/* {(state.imagePreview && state.imagePreview.length > 0) &&
-          <div className='p-1 text-center flex justify-center border-2 border-slate-500/30 bg-slate-800/50'>
-            <Image src={state.imagePreview} width="0" height="0" sizes='100%' className='w-auto h-auto max-h-[300px]' alt="" />
-          </div>
-        }
-        <div>
-          <Label htmlFor='image' value='Image' className='font' />
-          <Controller
-            defaultValue={undefined}
-            name='image'
-            control={control}
-            render={({ field }) => (<SingleFileInput color={formState.errors.image && 'failure'} onChange={f => {
+            render={({ field }) => (<ImageResizer value={field.value} onChange={f => {
+              console.log(f);
               handleOnInsertImage(f);
               field.onChange(f);
             }}/>)}
           />
           <ErrorHelperText message={formState.errors.image?.message} />
-        </div> */}
+        </div>
         <div>
           <Label htmlFor='name' value='Image Name' />
           <TextInput id='name' {...register('name')} placeholder='Give a meaningful name' color={formState.errors.name && 'failure'} />

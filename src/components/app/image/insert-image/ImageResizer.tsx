@@ -1,18 +1,17 @@
 'use client'
 
 import SingleFileInput from '@/components/common/single-file-input/SingleFileInput';
-import { Button, FileInput, Label, RangeSlider, TextInput } from 'flowbite-react';
+import { Button, Label, RangeSlider, TextInput } from 'flowbite-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
-import {compress, compressAccurately, EImageType} from 'image-conversion';
+import {compressAccurately, EImageType} from 'image-conversion';
 import { MdUpload } from "react-icons/md";
 import classNames from 'classnames';
 import { MAX_SIZE } from '@/constants/image';
 
 interface ImageResizerProps {
   value?: File,
-  onChange: (value: File) => void,
-
+  onChange: (value?: File) => void,
 }
 
 interface ImageResizerState {
@@ -20,10 +19,16 @@ interface ImageResizerState {
   editedFile?: File,
   previewFile?: string,
   editedPreviewFile?: string,
+
+  finalFile?: File
 }
 
 export default function ImageResizer(props: ImageResizerProps) {
-  const [state, setState] = useState<ImageResizerState>();
+  const [state, setState] = useState<ImageResizerState>({
+    finalFile: props.value,
+    rawFile: props.value,
+    previewFile: props.value ? URL.createObjectURL(props.value) : undefined,
+  });
   const [disabled, setDisabled] = useState(false);
   const [maxRatio, setMaxRatio] = useState(100);
   const [maxSizeKB, setMaxSizeKB] = useState(10);
@@ -32,6 +37,7 @@ export default function ImageResizer(props: ImageResizerProps) {
   const sizeEdited = Math.round((state?.editedFile?.size ?? 0) / 1024 * 100) / 100;
 
   function handleOnSaveImage(file: File) {
+    setState({ ...state, finalFile: file });
     props.onChange(file);
   }
 
@@ -40,14 +46,14 @@ export default function ImageResizer(props: ImageResizerProps) {
       setDisabled(true);
 
       // Sementara pakai punya orang. Nanti mau bikin sendiri algonya pakai binser-like algorithm
-      console.log(state.rawFile);
       compressAccurately(state.rawFile, {
         size: maxSizeKB > state.rawFile.size ? 10 : maxSizeKB,
         type: EImageType.JPEG,
         scale: maxRatio / 100
       }).then(newFile => {
-        const nf = new File([newFile], `revised-${state.rawFile?.name}`);
-        console.log(nf);
+        const nf = new File([newFile], `edited-image.jpeg`, {
+          type: 'image/jpeg'
+        });
         setState({
           ...state,
           editedFile: nf,
@@ -159,8 +165,8 @@ export default function ImageResizer(props: ImageResizerProps) {
             { state?.editedFile && <span className={classNames({ 'text-red-700': state.editedFile.size > MAX_SIZE, 'text-green-400': state.editedFile.size <= MAX_SIZE })}>Edited: {sizeEdited} KB</span> }
           </div>
           <div className='flex gap-2'>
-            { (state?.rawFile && state.rawFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={e => { handleOnSaveImage(state.rawFile!) }}>Use Original</Button> }
-            { (state?.editedFile && state.editedFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={e => { handleOnSaveImage(state.editedFile!) }}>Use Edited</Button> }
+            { (state?.rawFile && state.rawFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={_ => { handleOnSaveImage(state.rawFile!) }}>Use Original</Button> }
+            { (state?.editedFile && state.editedFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={_ => { handleOnSaveImage(state.editedFile!) }}>Use Edited</Button> }
           </div>
         </div>
       </div>
