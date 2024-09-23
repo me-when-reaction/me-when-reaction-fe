@@ -6,7 +6,7 @@ import React from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { HTTPRequestClient } from '@/apis/api-client';
+import { HTTPRequestClient } from '@/utilities/api-client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGlobalState } from '@/utilities/store';
 import ErrorHelperText from '@/components/common/error-helper/ErrorHelperText';

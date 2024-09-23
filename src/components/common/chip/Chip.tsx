@@ -9,7 +9,7 @@ export interface ChipProps {
 
 export default function Chip(props: ChipProps) {
 
-  const appendQuery = useGlobalState(x => x.newSearch.appendQuery);
+  const appendQuery = useGlobalState(x => x.search.appendQuery);
 
   function handleOnClick() { 
     appendQuery(props.text);

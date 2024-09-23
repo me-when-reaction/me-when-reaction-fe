@@ -1,11 +1,11 @@
 import { updateSession } from "@/utilities/supabase-server";
-import { NextRequest } from "next/server";
+import { MiddlewareConfig, NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest){
   return await updateSession(request);
 }
 
-export const config = {
+export const config : MiddlewareConfig = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:

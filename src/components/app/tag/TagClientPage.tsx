@@ -3,7 +3,7 @@
 import React from 'react'
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
-import { HTTPRequestClient } from '@/apis/api-client';
+import { HTTPRequestClient } from '@/utilities/api-client';
 import { GetTagManagementResponse } from '@/models/response/tag';
 import { Table } from 'flowbite-react';
 import { PaginationResponse } from '@/models/response/base';

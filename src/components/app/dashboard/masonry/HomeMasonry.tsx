@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { NewGetImageResponse } from '@/models/response/image';
-import { HTTPRequestClient } from '@/apis/api-client';
+import { HTTPRequestClient } from '@/utilities/api-client';
 import { GetImageRequest } from '@/models/request/image';
 import { useGlobalState } from '@/utilities/store';
 import FileSaver from 'file-saver';
@@ -39,7 +39,7 @@ interface HomeMasonryState {
 }
 
 export default function HomeMasonry(props: HomeMasonryCardProps) {
-  const finalQuery = useGlobalState(x => x.newSearch.finalQuery);
+  const finalQuery = useGlobalState(x => x.search.finalQuery);
   const [state, setState] = useState<HomeMasonryState>({
     pageSize: 10,
     rating: AgeRating.GENERAL

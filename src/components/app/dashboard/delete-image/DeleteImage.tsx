@@ -1,10 +1,11 @@
-import { HTTPRequestClient } from '@/apis/api-client'
-import { API_ROUTE } from '@/apis/api-routes'
+import { HTTPRequestClient } from '@/utilities/api-client'
+import { API_DETAIL } from '@/configuration/api'
 import { QUERY_KEYS } from '@/constants/query-key'
 import { BaseResponse } from '@/models/response/base'
 import { useGlobalState } from '@/utilities/store'
 import { useMutation } from '@tanstack/react-query'
 import { Button, Modal } from 'flowbite-react'
+import HTTPMethod from 'http-method-enum'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
@@ -30,8 +31,8 @@ export default function DeleteImage(props: DeleteImageProps) {
   const mutation = useMutation({
     mutationFn: async () => {
       return await HTTPRequestClient<BaseResponse<string>, { id: string }>({
-        url: API_ROUTE.IMAGE,
-        method: 'DELETE',
+        url: API_DETAIL.IMAGE.route,
+        method: HTTPMethod.DELETE,
         data: {
           id: props.id
         }

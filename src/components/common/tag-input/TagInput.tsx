@@ -4,6 +4,7 @@ import _ from 'lodash';
 import React, { ReactElement, useState } from 'react'
 import { BsX } from 'react-icons/bs';
 import { Key } from 'ts-key-enum';
+import { isMobile } from 'react-device-detect';
 
 export interface TagInputState {
   tag: string[],
@@ -24,7 +25,8 @@ export default function TagInput(props: TagInputProps) {
   function handleOnKeyDown(e: React.KeyboardEvent<HTMLInputElement>){
     // Tag baru
     // Space bakal diconvert ke _
-    if ((e.key === Key.Enter || e.key === " ") && e.currentTarget.value.length > 0){
+    console.log(e.key);
+    if ((e.key === Key.Enter || e.key === " " || e.key === "Space" || e.key === 'Spacebar') && e.currentTarget.value.length > 0){
       e.preventDefault();
       let newValue = structuredClone(tag);
       if (!newValue.includes(e.currentTarget.value.trim().toLowerCase())) {
@@ -40,6 +42,7 @@ export default function TagInput(props: TagInputProps) {
       setTag(tag.filter(a => a !== tag[tag.length - 1]))
       props.onChange(tag.filter(a => a !== tag[tag.length - 1]))
     }
+    
   };
 
   function handleOnPasteTag(e : React.ClipboardEvent<HTMLInputElement>){
