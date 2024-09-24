@@ -48,7 +48,7 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
 
   // useEffect(() => { setSearchBar(param.get('query') ?? ""); }, [param, setSearchBar]);
 
-  const { data, fetchNextPage, status, hasNextPage } = useInfiniteQuery({
+  const { data, fetchNextPage, status, hasNextPage, isLoading, isFetching } = useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_IMAGES, finalQuery, state],
     initialPageParam: 1,
     getNextPageParam: (response) => response.isLast ? undefined : response.currentPage + 1,
@@ -86,6 +86,7 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
           1350: 6
         }
       }
+      className='py-5'
     >
       <Masonry gutter='1rem'>
         {
@@ -118,8 +119,8 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
       </div>
       {masonries}
       {hasNextPage &&
-        <div className="text-center py-5">
-          <Button className='w-full' onClick={(_: any) => fetchNextPage()}>Add more</Button>
+        <div className="text-center pb-5">
+          <Button className='w-full' disabled={isFetching} onClick={(_: any) => fetchNextPage()}>Add more</Button>
         </div>
       }
     </div>
@@ -173,7 +174,13 @@ function HomeMasonryCard({ data, isLogin }: { data: NewGetImageResponse, isLogin
         'bg-[#a80f0f]/70': data.ageRating === AgeRating.EXPLICIT,
       })}>
         <div className='mb-2 overflow-hidden' onClick={handleOnClickExplicit}>
-          <Image src={data.image} alt={data.name} width={0} height={0} sizes='100vw'
+          {/* <Image src={data.image} alt={data.name} width={0} height={0} sizes='100vw'
+            className={classNames('w-[300px] h-auto rounded-md', {
+              'blur-xl': state.blur,
+              'cursor-pointer': data.ageRating === AgeRating.EXPLICIT
+            })} /> */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={data.image} alt={data.name} width={0} height={0} sizes='100vw'
             className={classNames('w-[300px] h-auto rounded-md', {
               'blur-xl': state.blur,
               'cursor-pointer': data.ageRating === AgeRating.EXPLICIT

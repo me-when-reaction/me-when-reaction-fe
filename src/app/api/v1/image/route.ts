@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
       totalPage: totalPage,
       isLast: totalPage <= data.currentPage,
       pageSize: data.pageSize,
-      data: preliminaryResult.slice(data.pageSize * (data.currentPage - 1), data.pageSize * data.currentPage)
+      data: preliminaryResult
     });
   });
 }
@@ -199,9 +199,9 @@ export async function PATCH(request: NextRequest) {
       }));
     
     await DB.transaction(async ctx => {
-      await ctx.insert(trTag).values(tagNotInDB);
+      if (tagNotInDB.length > 0) await ctx.insert(trTag).values(tagNotInDB);
       if (deletedTag.length > 0) await ctx.delete(trImageTag).where(inArray(trImageTag.id, deletedTag));
-      await ctx.insert(trImageTag).values(imageTag);
+      if (imageTag.length > 0) await ctx.insert(trImageTag).values(imageTag);
 
       await ctx.update(trImage)
         .set({
