@@ -44,7 +44,6 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
     pageSize: 10,
     rating: AgeRating.GENERAL
   })
-  const param = useSearchParams();
 
   // useEffect(() => { setSearchBar(param.get('query') ?? ""); }, [param, setSearchBar]);
 
@@ -101,8 +100,8 @@ export default function HomeMasonry(props: HomeMasonryCardProps) {
   )
 
   return (
-    <div className='px-10'>
-      <div className='flex items-center justify-end gap-3 mb-5'>
+    <div className='px-10 relative'>
+      <div className='flex items-center justify-end gap-3 mb-5 sticky top-0'>
         <div>&nbsp;</div>
         <div>
           <Label className='text-sm' htmlFor='ageRating'>Page Size</Label>

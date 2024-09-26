@@ -1,5 +1,6 @@
 import React from "react";
 import { BsHash, BsHouse, BsHouseFill, BsImageFill } from "react-icons/bs";
+import { MdQuestionAnswer } from "react-icons/md";
 
 export type RouteNested = {
   type: 'nested',
@@ -13,6 +14,7 @@ export type RouteSingle = {
 
 export type Route = {
   name: string,
+  anon?: boolean,
   icon?: React.ReactSVGElement | (() => React.ReactSVGElement) | React.FunctionComponent<React.SVGProps<SVGSVGElement>>,
 } & (RouteNested | RouteSingle)
 
@@ -21,7 +23,8 @@ export const ROUTES : Route[] = [
     name: "Home",
     type: 'single',
     icon: () => (<BsHouseFill className="text-sm"/>),
-    action: "/"
+    action: "/",
+    anon: true
   },
   {
     name: "Images",
@@ -34,6 +37,13 @@ export const ROUTES : Route[] = [
         action: "/image/insert"
       }
     ]
+  },
+  {
+    name: "FAQ",
+    type: 'single',
+    icon: () => (<MdQuestionAnswer className="text-sm" />),
+    action: '/faq',
+    anon: true
   }
   // {
   //   name: "Tag",

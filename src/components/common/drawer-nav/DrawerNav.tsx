@@ -6,7 +6,11 @@ import { Button, Drawer, Sidebar } from 'flowbite-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
 
-export default function DrawerNav() {
+type DrawerNavProps = {
+  isLogin: boolean
+}
+
+export default function DrawerNav(props : DrawerNavProps) {
   const [open, setOpen] = useState(false);
   const closeDrawer = () => setOpen(false);
 
@@ -30,13 +34,19 @@ export default function DrawerNav() {
           <Sidebar>
             <Sidebar.Items>
               <Sidebar.ItemGroup>
-                {ROUTES.map(r => renderSidebarOptions(r))}
+                {ROUTES.filter(x => props.isLogin || x.anon).map(r => renderSidebarOptions(r))}
               </Sidebar.ItemGroup>
               <Sidebar.ItemGroup>
                 <Sidebar.Item as={() => (
-                  <form action={Logout}>
-                    <Button color="failure" className='float-right' type='submit'>Logout</Button>
-                  </form>
+                  props.isLogin ? (
+                    <form action={Logout}>
+                      <Button color="failure" className='float-right' type='submit'>Logout</Button>
+                    </form>
+                  ) : (
+                    <Link href={'/login'} passHref className='flex gap-2'>
+                      <Button color='gray'>Login</Button>
+                    </Link>
+                  )
                 )}>
                 </Sidebar.Item>
               </Sidebar.ItemGroup>
