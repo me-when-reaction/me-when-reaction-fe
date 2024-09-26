@@ -11,7 +11,10 @@ import { AuthRequestSchema } from "@/models/request/auth";
 export async function login(_: FormError, formData: FormData) {
   const supabase = supabaseServer();
   try {
-    const data = await AuthRequestSchema.parseAsync(formData);
+    const data = await AuthRequestSchema.parseAsync({
+      email: formData.get("email"),
+      password: formData.get("password")
+    });
     const { error } = await supabase.auth.signInWithPassword(data);
     if (error) return { message : "Email invalid or invalid password 😔" } as FormError
   }
