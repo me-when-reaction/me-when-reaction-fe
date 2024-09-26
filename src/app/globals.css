@@ -31,3 +31,10 @@ body {
     text-wrap: balance;
   }
 }
+
+ul > li {
+    padding-left: 1rem;
+}
+ul > li > ul > li {
+    padding-left: 2rem;
+}

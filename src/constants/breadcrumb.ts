@@ -5,13 +5,15 @@ import { BsHouse } from "react-icons/bs";
 type MENU = {
   INSERT_IMAGE: "insert-image",
   UPDATE_IMAGE: "update-image",
-  HOME: "home"
+  HOME: "home",
+  FAQ: "faq"
 }
 
 export const MENU_LINK = {
   "/image/update": "UPDATE_IMAGE",
   "/image/insert": "INSERT_IMAGE",
-  "/": "HOME"
+  "/": "HOME",
+  "/faq": "FAQ"
 } satisfies Record<string, keyof MENU>
 
 export interface BreadcrumbLiteNav {
@@ -44,8 +46,17 @@ export const NAV_MENU = {
   HOME: [
     {
       title: "Home",
+      icon: BsHouse
+    }
+  ],
+  FAQ: [
+    {
+      title: "Home",
       icon: BsHouse,
       link: '/'
+    },
+    {
+      title: 'FAQ'
     }
   ]
 } satisfies Record<keyof MENU, BreadcrumbLiteNav[]>
