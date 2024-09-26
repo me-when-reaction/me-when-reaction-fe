@@ -1,11 +1,9 @@
+import { arrayUnion } from '@/utilities/array';
 import { Combobox, ComboboxInput } from '@headlessui/react';
 import classNames from 'classnames';
-import _ from 'lodash';
-import React, { ReactElement, useState } from 'react'
+import React, { useState } from 'react'
 import { BsX } from 'react-icons/bs';
 import { Key } from 'ts-key-enum';
-import { isMobile } from 'react-device-detect';
-
 export interface TagInputState {
   tag: string[],
   input: string,
@@ -25,7 +23,6 @@ export default function TagInput(props: TagInputProps) {
   function handleOnKeyDown(e: React.KeyboardEvent<HTMLInputElement>){
     // Tag baru
     // Space bakal diconvert ke _
-    console.log(e.key);
     if ((e.key === Key.Enter || e.key === " " || e.key === "Space" || e.key === 'Spacebar') && e.currentTarget.value.length > 0){
       e.preventDefault();
       let newValue = structuredClone(tag);
@@ -49,8 +46,8 @@ export default function TagInput(props: TagInputProps) {
     e.stopPropagation();
     e.preventDefault();
     let paste = e.clipboardData.getData('Text').toLowerCase().split(' ').filter(x => x.length > 0);
-    setTag(_.union(tag, paste))
-    props.onChange(_.union(tag, paste));
+    setTag(arrayUnion(tag, paste))
+    props.onChange(arrayUnion(tag, paste));
   }
 
   function handleOnRemoveTag(name: string){
@@ -92,7 +89,7 @@ function TagInputChip(props : TagInputChipProps) {
       'dark:text-red-900 dark:bg-red-400': props.color === 'failure'
     })}>
       <span className={classNames('whitespace-nowrap')}>{props.label}</span>
-      <div className='w-full h-full flex justify-center items-center cursor-pointer hover:text-white/50' onClick={_ => props.onClick()}><BsX className='text-xl'/></div>
+      <div className='w-full h-full flex justify-center items-center cursor-pointer hover:text-white/50' onClick={(_: any) => props.onClick()}><BsX className='text-xl'/></div>
     </div>
   )
 }

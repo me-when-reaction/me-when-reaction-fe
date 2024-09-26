@@ -23,7 +23,6 @@ const columns = [
   columnHelper.accessor<'name', string>('name', {
     header: 'Tag',
     cell: x => {
-      console.log(x.cell.getValue());
       return x.cell.getValue();
     },
   }),

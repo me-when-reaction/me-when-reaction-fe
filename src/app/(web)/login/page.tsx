@@ -8,7 +8,7 @@ import LoginFormPage from '@/components/app/login/LoginForm';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Login- Me When Reaction",
+    title: "Login - Me When Reaction",
     robots: "noindex, nofollow"
   }
 }

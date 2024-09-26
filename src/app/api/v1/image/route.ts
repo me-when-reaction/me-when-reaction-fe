@@ -4,11 +4,11 @@ import { trImage, trImageTag, trTag } from "@/database/schema";
 import { DeleteImageRequestSchema, GetImageRequestSchema, InsertImageRequestSchema, UpdateImageRequestSchema } from "@/models/request/image";
 import { NewGetImageResponse } from "@/models/response/image";
 import { badRequestResponse, handleDataValidation, paginationResponse, successResponse, unauthorizedResponse } from "@/utilities/api";
+import { arrayExcept, arrayUnion } from "@/utilities/array";
 import { sqlArray } from "@/utilities/database";
 import { deleteImage, getStoragePath, uploadImage } from "@/utilities/storage";
 import { supabaseServer } from "@/utilities/supabase-server";
 import { and, count, desc, eq, inArray, InferInsertModel, lte, not, sql } from "drizzle-orm";
-import _ from "lodash";
 import { NextRequest } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -117,7 +117,9 @@ export async function POST(request: NextRequest) {
       name: trTag.name
     }).from(trTag)
       .where(inArray(trTag.name, tagProcessed));
-    const tagNotInDB = _.difference(tagProcessed, tagInDB.map(x => x.name))
+    
+
+    const tagNotInDB = arrayExcept(tagProcessed, tagInDB.map(x => x.name))
       .map<InferInsertModel<typeof trTag>>(x => ({
         id: uuidv4(),
         name: x,
@@ -127,7 +129,7 @@ export async function POST(request: NextRequest) {
         deleted: false
       }));
     
-    const imageTag = _.union(tagInDB, tagNotInDB.map(x => ({ id: x.id, name: x.name, })))
+    const imageTag = arrayUnion(tagInDB, tagNotInDB.map(x => ({ id: x.id, name: x.name, })))
       .map<InferInsertModel<typeof trImageTag>>(x => ({
         id: uuidv4(),
         imageId: ID,
@@ -188,7 +190,7 @@ export async function PATCH(request: NextRequest) {
         deleted: false
       }));
     
-    const imageTag = _.union(tagInDB, tagNotInDB)
+    const imageTag = arrayUnion(tagInDB, tagNotInDB)
       .map<InferInsertModel<typeof trImageTag>>(x => ({
         id: uuidv4(),
         imageId: image.id,

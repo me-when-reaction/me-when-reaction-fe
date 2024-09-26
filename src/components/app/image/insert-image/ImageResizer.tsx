@@ -165,8 +165,8 @@ export default function ImageResizer(props: ImageResizerProps) {
             { state?.editedFile && <span className={classNames({ 'text-red-700': state.editedFile.size > MAX_SIZE, 'text-green-400': state.editedFile.size <= MAX_SIZE })}>Edited: {sizeEdited} KB</span> }
           </div>
           <div className='flex gap-2'>
-            { (state?.rawFile && state.rawFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={_ => { handleOnSaveImage(state.rawFile!) }}>Use Original</Button> }
-            { (state?.editedFile && state.editedFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={_ => { handleOnSaveImage(state.editedFile!) }}>Use Edited</Button> }
+            { (state?.rawFile && state.rawFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={(_: any)  => { handleOnSaveImage(state.rawFile!) }}>Use Original</Button> }
+            { (state?.editedFile && state.editedFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={(_: any)  => { handleOnSaveImage(state.editedFile!) }}>Use Edited</Button> }
           </div>
         </div>
       </div>

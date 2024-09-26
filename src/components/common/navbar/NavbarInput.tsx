@@ -55,7 +55,7 @@ export default function NavbarInput() {
           </div>
         </Combobox>
       </div>
-      <Button className='rounded-l-none flex items-center' onClick={_ => searchNow()}>
+      <Button className='rounded-l-none flex items-center' onClick={(_: any) => searchNow()}>
         <IoSearchSharp className='text-lg' />
       </Button>
     </div>
@@ -71,7 +71,7 @@ function NavbarInputNewChip(props : NavbarInputNewChipProps) {
   return (
     <div className='bg-slate-600 p-1 text-sm rounded-sm flex'>
       <span className='whitespace-nowrap'>{props.label}</span>
-      <div className='w-full h-full flex justify-center items-center cursor-pointer hover:text-white/50' onClick={_ => props.onClick()}><BsX className='text-xl'/></div>
+      <div className='w-full h-full flex justify-center items-center cursor-pointer hover:text-white/50' onClick={(_: any) => props.onClick()}><BsX className='text-xl'/></div>
     </div>
   )
 }

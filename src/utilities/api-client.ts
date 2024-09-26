@@ -6,8 +6,7 @@ import { BaseResponse } from "@/models/response/base";
 import { toFormData } from "@/utilities/form";
 import { supabaseClient } from "@/utilities/supabase-client";
 import HTTPMethod from "http-method-enum";
-import { isNil, omitBy } from "lodash";
-
+import { noNullObject } from "./array";
 /**
  * Bikin HTTP Request ke API
  * 
@@ -23,7 +22,8 @@ export async function HTTPRequestClient<TResponse, TRequest extends Record<strin
 
   let url = request.url;
   if (request.method === HTTPMethod.GET || request.method === HTTPMethod.DELETE) {
-    let arrayParams = Object.entries(omitBy(request.data ?? {}, isNil))
+    let arrayParams = Object.entries(request.data ?? {})
+      .filter(([_, v]) => v !== null && v !== undefined)
       .flatMap(([k, v]) => {
         if (Array.isArray(v)) return v.map(x => ([k, x]));
         else return [[k, v]]
@@ -42,7 +42,7 @@ export async function HTTPRequestClient<TResponse, TRequest extends Record<strin
   // Jika kita kirim data pakai form, maka kita masukkan ke formData
   if (request.method !== HTTPMethod.GET && request.method !== HTTPMethod.DELETE){
     if (useForm && request.data) conf.body = toFormData(request.data!);
-    else conf.body = JSON.stringify(omitBy(request.data ?? {}, isNil));
+    else conf.body = JSON.stringify(noNullObject(request.data ?? {}));
   }
 
   const response = await(await fetch(url, conf)).json() as BaseResponse<TResponse>;

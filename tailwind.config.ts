@@ -3,7 +3,6 @@ import type { Config } from "tailwindcss";
 import flowbite from "flowbite-react/tailwind";
 import ts from 'tailwind-scrollbar';
 
-
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",

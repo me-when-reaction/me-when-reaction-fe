@@ -80,7 +80,6 @@ export default function InsertImage() {
             name='image'
             control={control}
             render={({ field }) => (<ImageResizer value={field.value} onChange={f => {
-              console.log(f);
               handleOnInsertImage(f);
               field.onChange(f);
             }}/>)}

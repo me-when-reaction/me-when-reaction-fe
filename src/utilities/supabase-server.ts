@@ -1,9 +1,7 @@
 import { API_DETAIL } from "@/configuration/api";
 import { CookieOptions, createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
-import { StatusCode } from 'status-code-enum';
 import { notFoundResponse, unauthorizedResponse } from "./api";
 import HTTPMethod from "http-method-enum";
 

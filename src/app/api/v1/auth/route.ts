@@ -1,14 +1,14 @@
 import { AuthRequestSchema } from "@/models/request/auth";
-import { dataResponse, handleFormDataValidation, unauthorizedResponse } from "@/utilities/api";
+import { dataResponse, handleDataValidation, unauthorizedResponse } from "@/utilities/api";
 import { supabaseServer } from "@/utilities/supabase-server";
 import { NextRequest, NextResponse } from "next/server";
 import StatusCode from "status-code-enum";
 
 export async function POST(request: NextRequest){
-  return await handleFormDataValidation(request, AuthRequestSchema, async (data) => {
+  return await handleDataValidation(request, AuthRequestSchema, async (data) => {
     const client = supabaseServer();
     const { data: tokenData, error } = await client.auth.signInWithPassword({
-      email: data.username,
+      email: data.email,
       password: data.password
     });
 

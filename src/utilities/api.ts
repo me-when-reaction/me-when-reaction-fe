@@ -1,22 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
 import StatusCode from "status-code-enum";
 import { z, ZodError } from "zod";
-import queryString from 'query-string';
 import { PaginationResponse } from "@/models/response/base";
 import HTTPMethod from "http-method-enum";
-import { SP } from "next/dist/shared/lib/utils";
-import { zfd } from "zod-form-data";
 
 export function dataResponse(data: any, d: {message?: string, statusCode?: StatusCode} = {message: "Success", statusCode: StatusCode.SuccessOK}) {
   return NextResponse.json({
     statusCode: d.statusCode,
     message: d.message,
     data: data
-  }, { status: d.statusCode })
+  }, { status: d.statusCode });
 }
 
 export const paginationResponse = <T>(data: PaginationResponse<T>) => dataResponse(data, { message: "Success", statusCode: StatusCode.SuccessOK })
-
 export const serverErrorResponse = (message: string = "Whoops, something wrong :(") => dataResponse(message, { message: message, statusCode: StatusCode.ServerErrorInternal });
 export const notFoundResponse = (message: string = "Endpoint not found") => dataResponse(message, { message: message, statusCode: StatusCode.ClientErrorNotFound });
 export const successResponse = (message: string) => dataResponse(message, { message: message, statusCode: StatusCode.SuccessOK });
@@ -37,26 +33,26 @@ export async function handleDataValidation<TSchema extends z.ZodTypeAny>(
   onSuccess: (data: z.infer<TSchema>) => Promise<NextResponse>,
   slug?: { [key: string]: any }
 ) {
-  let unsanitaryData: URLSearchParams | FormData | undefined;
+  let unsanitaryData: any;
   if (request.method === HTTPMethod.GET || request.method === HTTPMethod.DELETE)
   {
     let sp = request.nextUrl.searchParams;
     for (const [key, value] of Object.entries(slug ?? {})) sp.append(key, value);
-    unsanitaryData = sp;
+    unsanitaryData = ParseData(sp);
   }
   else
   {
     let fd = await request.formData();
     for (const [key, value] of Object.entries(slug ?? {})) fd.append(key, value);
-    unsanitaryData = fd;
+    unsanitaryData = ParseData(fd);
   }
   try {
-    let data = await zfd.formData(schema).parseAsync(unsanitaryData);
+    const data = await schema.parseAsync(unsanitaryData);
     return await onSuccess(data);
   }
   catch (e) {
     if (e instanceof ZodError) {
-      return dataResponse({
+    return dataResponse({
         error: e.issues.map(x => x.message)
       }, {
         message: "Validation Error",
@@ -64,32 +60,16 @@ export async function handleDataValidation<TSchema extends z.ZodTypeAny>(
       })
     }
     else {
-      console.log(e);
       return serverErrorResponse();
     }
   }
 }
 
-
-export async function handleFormDataValidation<TSchema extends z.ZodTypeAny>(request: NextRequest, schema: TSchema, onSuccess: (data: z.infer<TSchema>) => Promise<NextResponse>) {
-  let fd: FormData = new FormData();
-  try {
-    fd = (await request.formData())
+function ParseData<T>(obj: URLSearchParams | FormData){
+  let result: any = {};
+  for (const key of obj.keys()) {
+    const val = obj.getAll(key);
+    result[key] = val.length > 1 ? val : val[0]
   }
-  catch (e) { }
-
-  try {
-    let data = await schema.parseAsync(Object.fromEntries(fd));
-    return await onSuccess(data);
-  }
-  catch (e) {
-    if (e instanceof ZodError) {
-      return dataResponse({
-        data: {
-          error: e.issues.map(x => x.message)
-        },
-        statusCode: StatusCode.ClientErrorBadRequest
-      })
-    }
-  }
+  return result as T;
 }
