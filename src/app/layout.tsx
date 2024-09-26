@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import classNames from 'classnames';
-import { DarkThemeToggle, Flowbite, ThemeModeScript } from 'flowbite-react';
+import { Flowbite, ThemeModeScript } from 'flowbite-react';
 
 const font = Open_Sans({
   subsets: ["latin"],

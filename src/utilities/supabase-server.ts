@@ -1,6 +1,9 @@
+import { API_DETAIL } from "@/configuration/api";
 import { CookieOptions, createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { notFoundResponse, unauthorizedResponse } from "./api";
+import HTTPMethod from "http-method-enum";
 
 /**
  * Panggil supabase client. Tempel di cookies ini nanti.
@@ -76,6 +79,15 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  await supabase.auth.getUser();
+  const { data: { user }} = await supabase.auth.getUser()
+
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    const path = request.nextUrl.pathname;
+
+    const apiDetail = Object.values(API_DETAIL).find(x => path.startsWith(x.route));
+    if (!apiDetail) return notFoundResponse();
+    else if (!(apiDetail.anonMethod ?? []).includes(request.method as HTTPMethod) && !user) return unauthorizedResponse();
+  }
+
   return response;
 }

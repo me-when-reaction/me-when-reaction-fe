@@ -4,8 +4,6 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type showKeys<T extends keyof any> = T extends any ? T : never;
-
 export interface QueryState {
   queryClient: QueryClient,
   setQueryClient: (q: QueryClient) => void
@@ -25,14 +23,14 @@ export interface AlertState {
   closeAlert: () => void;
 }
 
-export interface SearchState {
-  /** Untuk searchbar saja */
-  text: string;
-  setText: (input: string) => void
 
-  /** Untuk pencarian dan lempar ke aplikasi */
-  query: string;
-  setQuery: (input: string) => void
+export interface SearchState {
+  query: string[];
+  finalQuery: [tagAND: string[], tagOR: string[]];
+  finalizeQuery: () => void;
+  appendQuery: (input: string) => void,
+  removeQuery: (input: string) => void,
+  popQuery: () => void
 }
 
 export interface GlobalState {
@@ -50,10 +48,20 @@ export const useGlobalState = create<GlobalState>()(
     (set) => ({
       user: null,
       search: {
-        text: "",
-        query: "",
-        setQuery: (input) => set(produce<GlobalState>((s) => { s.search.query = input })),
-        setText: (input) => set(produce<GlobalState>((s) => { s.search.text = input })),
+        query: [],
+        finalQuery: [[], []],
+        appendQuery: (input) => set(produce<GlobalState>((d) => {
+          if (d.search.query.indexOf(input) === -1) d.search.query.push(input);
+        })),
+        removeQuery: (input) => set(produce<GlobalState>((d) => {
+          d.search.query = d.search.query.filter(x => x !== input);
+        })),
+        popQuery: () => set(produce<GlobalState>((d) => {
+          d.search.query.pop();
+        })),
+        finalizeQuery: () => set(produce<GlobalState>(d => {
+          d.search.finalQuery = [d.search.query.filter(x => !x.startsWith("+")), d.search.query.filter(x => x.startsWith("+")).map(x => x.slice(1))];
+        }))
       },
       alert: {
         text: "",
