@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     
     await DB.transaction(async ctx => {
       await ctx.insert(trImage).values(image);
-      await ctx.insert(trTag).values(tagNotInDB);
+      if (tagNotInDB.length > 0) await ctx.insert(trTag).values(tagNotInDB);
       await ctx.insert(trImageTag).values(imageTag);
       await uploadImage(data.image, image.link);
     });

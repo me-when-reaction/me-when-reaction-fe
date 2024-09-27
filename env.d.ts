@@ -18,5 +18,6 @@ declare namespace NodeJS {
     STORAGE_SUPABASE_SECRET: string;
     STORAGE_SUPABASE_ENDPOINT: string;
     STORAGE_SUPABASE_BUCKET: string;
+    SUPABASE_SECRET_KEY: string;
   }
 }
