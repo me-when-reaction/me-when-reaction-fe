@@ -19,11 +19,12 @@ export async function uploadImage(file: File, fileName: string = file.name) {
     await fs.writeFile(filePath, buffer, { flag: 'w+' });
   }
   else if (process.env.STORAGE_TYPE === "Supabase") {
-    await supabaseServer().storage
+    const err = await supabaseServer(true).storage
       .from(process.env.STORAGE_SUPABASE_BUCKET)
       .upload(fileName, file, {
         upsert: false
       });
+    if (err.error) throw new Error("Cannot insert file");
   }
   else throw new Error("Storage type not configured correctly")
 }

@@ -7,10 +7,21 @@ import HTTPMethod from "http-method-enum";
 
 /**
  * Panggil supabase client. Tempel di cookies ini nanti.
+ * @param [elevatedAccess=false] PAKAI JIKA MEMANG PERLU BANGET
  * @returns Supabase client untuk server
  */
-export function supabaseServer() {
+export function supabaseServer(elevatedAccess: boolean = false) {
   const cookie = cookies();
+
+  if (elevatedAccess) return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SECRET_KEY,
+    {
+      cookies: {
+        
+      }
+    }
+  );
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
