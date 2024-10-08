@@ -26,11 +26,12 @@ export interface AlertState {
 
 export interface SearchState {
   query: string[];
-  finalQuery: [tagAND: string[], tagOR: string[]];
-  finalizeQuery: () => void;
+  finalQuery: [tagAND: string[], tagOR: string[]],
+  finalizeQuery: () => void,
   appendQuery: (input: string) => void,
   removeQuery: (input: string) => void,
-  popQuery: () => void
+  popQuery: () => void,
+  initQueryFromURL: (q: string) => void
 }
 
 export interface GlobalState {
@@ -61,6 +62,11 @@ export const useGlobalState = create<GlobalState>()(
         })),
         finalizeQuery: () => set(produce<GlobalState>(d => {
           d.search.finalQuery = [d.search.query.filter(x => !x.startsWith("+")), d.search.query.filter(x => x.startsWith("+")).map(x => x.slice(1))];
+        })),
+        initQueryFromURL: (q: string) => set(produce<GlobalState>((d) => {
+          let queries = q.split(" ");
+          d.search.query = queries;
+          d.search.finalQuery = [queries.filter(x => !x.startsWith("+")), queries.filter(x => x.startsWith("+")).map(x => x.slice(1))];
         }))
       },
       alert: {

@@ -18,14 +18,12 @@ export default function NavbarInput() {
 
   const searchNow = () => {
     finalizeQuery();
-    if (pathName !== '/') router.push('/');
+    let strings = query.join(" ");
+    if (pathName !== '/') router.push(`/${(strings.length > 0 ? "?query=" + strings : "")}`);
+    else window.history.pushState(null, '', `/?query=${strings}`);
   }
 
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const androidCode = e.keyCode || e.which;
-    const isSpaceAndroid = ((androidCode === 0 || androidCode === 229) && e.target && e.target instanceof HTMLInputElement) ?
-      e.target.value.charAt(e.target.selectionStart! - 1) === "" : false;
-
     if ((e.key === Key.Enter || e.key === Key.Tab) && e.currentTarget.value.length === 0) searchNow();
     else if ((e.key === Key.Enter || e.key === Key.Tab || e.key === " " || e.currentTarget.value.slice(-1) === " ") && e.currentTarget.value.length > 0) {
       e.preventDefault();
