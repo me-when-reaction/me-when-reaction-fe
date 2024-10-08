@@ -19,6 +19,8 @@ interface ImageResizerState {
   editedFile?: File,
   previewFile?: string,
   editedPreviewFile?: string,
+  rawResolution?: string,
+  editedResolution?: string,
 
   finalFile?: File
 }
@@ -100,10 +102,18 @@ export default function ImageResizer(props: ImageResizerProps) {
     }
   }
 
+  function handleOnLoadOriginalImage(e: React.SyntheticEvent<HTMLImageElement, Event>) {
+    setState({ ...state, rawResolution: `${e.currentTarget.naturalWidth} * ${e.currentTarget.naturalHeight}` });
+  }
+
+  function handleOnLoadEditedImage(e: React.SyntheticEvent<HTMLImageElement, Event>) {
+    setState({ ...state, editedResolution: `${e.currentTarget.naturalWidth} * ${e.currentTarget.naturalHeight}` });
+  }
+
   return (
     <div>
       {/* Image Editor */}
-      <div className='grid grid-cols-[7fr_3fr]'>
+      <div className='grid grid-cols-[7fr_3fr] max-md:grid-cols-1'>
         <div className='p-1 text-center flex justify-center border-2 border-slate-600 bg-slate-800/50 flex-col gap-2'>
           {/* Dropzone */}
           <Label
@@ -124,7 +134,7 @@ export default function ImageResizer(props: ImageResizerProps) {
                 ) : (
                   <div className='flex flex-col justify-center items-center p-2 w-full gap-2'>
                     <span className='text-xs text-white/50'>This is your image. Drag another image to change your input</span>
-                    <Image src={state.previewFile} width="0" height="0" sizes='100%' className='w-auto h-auto max-h-[300px]' alt="" />
+                    <Image onLoad={handleOnLoadOriginalImage} ref={null} src={state.previewFile} width="0" height="0" sizes='100%' className='w-auto h-auto' alt="" />
                   </div>
                 )
             }
@@ -132,11 +142,11 @@ export default function ImageResizer(props: ImageResizerProps) {
           </Label>
           {state?.editedPreviewFile &&
             <div className='flex justify-center w-full'>
-              <Image src={state.editedPreviewFile} width="0" height="0" sizes='100%' className='w-auto h-auto max-h-[300px]' alt="" />
+              <Image onLoad={handleOnLoadEditedImage} src={state.editedPreviewFile} width="0" height="0" sizes='100%' className='w-auto h-auto' alt="" />
             </div>
           }
         </div>
-        <div className='p-2 bg-slate-800/90 border-2 border-slate-600 border-l-0 rounded-r-md flex gap-2 flex-col text-sm'>
+        <div className='p-2 bg-slate-800/90 border-2 border-slate-600 border-l-0 max-md:border-l-2 max-md:border-t-0 rounded-r-md flex gap-2 flex-col text-sm max-md:rounded-r-none max-md:rounded-b-md'>
           <div>
             <Label className='text-sm'>Max Aspect Ratio</Label>
             <div className='flex gap-2 items-center w-full'>
@@ -161,8 +171,8 @@ export default function ImageResizer(props: ImageResizerProps) {
           </div>
           { !!state?.rawFile && <hr className='border-slate-400/50'/> }
           <div className='flex flex-col gap-1'>
-            { state?.rawFile && <span className={classNames({ 'text-red-700': state.rawFile.size > MAX_SIZE, 'text-green-400': state.rawFile.size <= MAX_SIZE })}>Original: {sizeOriginal} KB</span> }
-            { state?.editedFile && <span className={classNames({ 'text-red-700': state.editedFile.size > MAX_SIZE, 'text-green-400': state.editedFile.size <= MAX_SIZE })}>Edited: {sizeEdited} KB</span> }
+            { (state?.rawFile && state?.rawResolution) && <span className={classNames({ 'text-red-700': state.rawFile.size > MAX_SIZE, 'text-green-400': state.rawFile.size <= MAX_SIZE })}>Original: {sizeOriginal} KB ({state?.rawResolution})</span> }
+            { (state?.editedFile && state?.editedResolution) && <span className={classNames({ 'text-red-700': state.editedFile.size > MAX_SIZE, 'text-green-400': state.editedFile.size <= MAX_SIZE })}>Edited: {sizeEdited} KB ({state?.editedResolution})</span> }
           </div>
           <div className='flex gap-2'>
             { (state?.rawFile && state.rawFile.size <= MAX_SIZE) && <Button className='flex-grow-1 w-full' onClick={(_: any)  => { handleOnSaveImage(state.rawFile!) }}>Use Original</Button> }

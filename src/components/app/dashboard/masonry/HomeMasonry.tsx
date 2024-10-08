@@ -13,7 +13,6 @@ import classNames from 'classnames';
 import { PaginationResponse } from '@/models/response/base';
 import { Button, Label, Select } from 'flowbite-react';
 import { animated, useSpring } from '@react-spring/web';
-import { useSearchParams } from 'next/navigation';
 import { BsPencilSquare } from 'react-icons/bs';
 import Link from 'next/link';
 import Chip from '@/components/common/chip/Chip';
@@ -22,6 +21,8 @@ import { QUERY_KEYS } from '@/constants/query-key';
 import { AgeRating, PAGE_SIZES } from '@/constants/image';
 import { API_DETAIL } from '@/configuration/api';
 import HTTPMethod from 'http-method-enum';
+import { isURL } from '@/utilities/url';
+import { useSearchParams } from 'next/navigation';
 
 interface HomeMasonryCardState {
   open: boolean,
@@ -39,15 +40,22 @@ interface HomeMasonryState {
 }
 
 export default function HomeMasonry(props: HomeMasonryCardProps) {
-  const finalQuery = useGlobalState(x => x.search.finalQuery);
+  const [finalQuery, initQuery, queryClient] = useGlobalState(x => [x.search.finalQuery, x.search.initQueryFromURL, x.query.queryClient]);
   const [state, setState] = useState<HomeMasonryState>({
     pageSize: 10,
     rating: AgeRating.GENERAL
-  })
+  });
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    console.log("Executed");
+    let sp = searchParams.get("query");
+    if (sp) initQuery(sp);
+  }, [initQuery, searchParams]);
 
   // useEffect(() => { setSearchBar(param.get('query') ?? ""); }, [param, setSearchBar]);
 
-  const { data, fetchNextPage, status, hasNextPage, isLoading, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, status, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: [QUERY_KEYS.GET_IMAGES, finalQuery, state],
     initialPageParam: 1,
     getNextPageParam: (response) => response.isLast ? undefined : response.currentPage + 1,
@@ -180,27 +188,29 @@ function HomeMasonryCard({ data, isLogin }: { data: NewGetImageResponse, isLogin
             })} /> */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={data.image} alt={data.name} width={0} height={0} sizes='100vw'
-            className={classNames('w-[300px] h-auto rounded-md', {
+            className={classNames('h-auto w-full rounded-md', {
               'blur-xl': state.blur,
               'cursor-pointer': data.ageRating === AgeRating.EXPLICIT
             })} />
         </div>
         <div className='h-full flex flex-col gap-1'>
           <div className='text-xs break-words'>
-            <p>🍅: {data.source}</p>
+            <p>🍅: {isURL(data.source) ? (<a className='underline text-blue-100 hover:text-blue-300' rel='noopener noreferrer' target='_blank' href={data.source}>{data.source}</a>) : data.source}</p>
             <p>🗣: {data.description}</p>
           </div>
           <div className='flex gap-1 flex-wrap my-2'>
             {data.tags.map(t => (<Chip text={t} key={t} />))}
           </div>
-          <div className='flex justify-between gap-3 h-full items-center'>
-            <Button color='green' className='flex-1' size='xs' disabled={state.saving} onClick={(_: any) => handleOnSteal()}>Steal</Button>
-            {(isLogin) && 
-              <Link href={`image/update?id=${data.id}`} passHref className='h-full'>
-                <BsPencilSquare className='flex items-center'/>
-              </Link>
-            }
-            {(isLogin) && <DeleteImage id={data.id} image={data.image}/>}
+          <div className='flex justify-between gap-3 h-full items-center max-md:flex-col'>
+            <Button color='green' className='flex-1 max-md:w-full' size='xs' disabled={state.saving} onClick={(_: any) => handleOnSteal()}>Steal</Button>
+            <div className='flex gap-3 max-md:w-full max-md:justify-between'>
+              {(isLogin) && 
+                <Link href={`image/update?id=${data.id}`} passHref className='h-full'>
+                  <BsPencilSquare className='flex items-center'/>
+                </Link>
+              }
+              {(isLogin) && <DeleteImage id={data.id} image={data.image}/>}
+            </div>
           </div>
         </div>
       </div>

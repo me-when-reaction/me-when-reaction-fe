@@ -7,7 +7,6 @@ import { FormError } from "@/models/errors/FormError";
 import { ZodError } from "zod";
 import { AuthRequestSchema } from "@/models/request/auth";
 
-
 export async function login(_: FormError, formData: FormData) {
   const supabase = supabaseServer();
   try {
