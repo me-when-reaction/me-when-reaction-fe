@@ -8,7 +8,6 @@ import { Key } from 'ts-key-enum';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from 'flowbite-react';
 import { IoSearchSharp } from "react-icons/io5";
-import { AiOutlineEnter } from "react-icons/ai";
 
 export default function NavbarInput() {
   const [query, appendQuery, popQuery, removeQuery, finalizeQuery] = useGlobalState(s => [s.search.query, s.search.appendQuery, s.search.popQuery, s.search.removeQuery, s.search.finalizeQuery]);
