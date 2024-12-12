@@ -19,7 +19,6 @@ export async function HTTPRequestClient<TResponse, TRequest extends Record<strin
   let token = supabase.data.session?.access_token;
   
   // Kita pecah prosesnya biar GET dan DELETE punya proses sendiri biar nga mabuk
-
   let url = request.url;
   if (request.method === HTTPMethod.GET || request.method === HTTPMethod.DELETE) {
     let arrayParams = Object.entries(request.data ?? {})
@@ -45,8 +44,10 @@ export async function HTTPRequestClient<TResponse, TRequest extends Record<strin
     else conf.body = JSON.stringify(noNullObject(request.data ?? {}));
   }
 
-  const response = await(await fetch(url, conf)).json() as BaseResponse<TResponse>;
-
-  if (response.statusCode / 100 !== 2) throw new RequestError(`(${response.statusCode}) ${response.message}`);
+  const response = await (await fetch(url, conf)).json() as BaseResponse<TResponse>;
+  
+  console.log(response);
+  console.log(response.statusCode);
+  if (Math.round(response.statusCode / 100) !== 2) throw new RequestError(`(${response.statusCode}) ${response.message}`);
   return response;
 }
